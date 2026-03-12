@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion — MyCity & BizNode</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Fraunces:ital,wght@0,700;0,900;1,400&family=Outfit:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0b0e;
+  --surface:#111318;
+  --card:#161a21;
+  --border:#1e2330;
+  --text:#eaecf2;
+  --sub:#4a5268;
+  --city-col:#ff4757;
+  --biz-col:#c9a84c;
+  --green:#3de0a0;
+  --err:#e05555;
+}
+html,body{height:100%;}
+body{
+  background:var(--bg);
+  font-family:'Outfit',sans-serif;
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  position:relative;
+  overflow:hidden;
+}
+
+/* AMBIENT */
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.amb-c1{position:absolute;top:-20%;left:-10%;width:60%;height:60%;background:radial-gradient(ellipse,rgba(255,71,87,.06) 0%,transparent 65%);}
+.amb-c2{position:absolute;bottom:-20%;right:-10%;width:55%;height:55%;background:radial-gradient(ellipse,rgba(201,168,76,.06) 0%,transparent 65%);}
+.amb-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:40px 40px;}
+
+/* WRAPPER */
+.auth-wrap{position:relative;z-index:1;width:100%;max-width:440px;padding:24px 16px;animation:fadeUp .7s cubic-bezier(.16,1,.3,1) both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+/* LOGO SWITCHER */
+.app-switcher{display:flex;gap:8px;margin-bottom:28px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:6px;}
+.app-btn{flex:1;padding:10px 8px;border-radius:11px;cursor:pointer;text-align:center;transition:all .25s;border:1px solid transparent;}
+.app-btn.city.active{background:rgba(255,71,87,.12);border-color:rgba(255,71,87,.25);}
+.app-btn.biz.active{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.2);}
+.app-btn-name{font-weight:800;font-size:14px;line-height:1;}
+.app-btn.city .app-btn-name{font-family:'Fraunces',serif;color:var(--city-col);}
+.app-btn.biz .app-btn-name{font-family:'Cormorant Garant',serif;color:var(--biz-col);}
+.app-btn:not(.active) .app-btn-name{color:var(--sub);}
+.app-btn-sub{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;margin-top:3px;}
+.app-btn.active.city .app-btn-sub{color:rgba(255,71,87,.6);}
+.app-btn.active.biz .app-btn-sub{color:rgba(201,168,76,.5);}
+.app-btn:not(.active) .app-btn-sub{color:var(--sub);}
+
+/* CARD */
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.4);}
+.auth-card-top{padding:28px 28px 0;}
+.auth-headline{font-size:28px;font-weight:900;line-height:1.1;margin-bottom:6px;}
+.auth-headline.city{font-family:'Fraunces',serif;}
+.auth-headline.biz{font-family:'Cormorant Garant',serif;font-weight:700;}
+.auth-headline em{font-style:italic;}
+.auth-headline.city em{color:var(--city-col);}
+.auth-headline.biz em{color:var(--biz-col);}
+.auth-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);letter-spacing:.06em;margin-bottom:24px;}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin:0 -28px;padding:0 28px;}
+.tab{padding:10px 18px;font-size:13px;font-weight:700;color:var(--sub);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;margin-bottom:-1px;}
+.tab.active{color:var(--text);border-bottom-color:var(--city-col);}
+.tab.biz-tab.active{border-bottom-color:var(--biz-col);}
+
+/* FORM */
+.auth-form{padding:22px 28px 28px;display:none;}
+.auth-form.active{display:block;animation:fadeUp .35s cubic-bezier(.16,1,.3,1);}
+.field{margin-bottom:14px;}
+.field-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin-bottom:6px;display:block;}
+.field-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 14px;font-size:14px;font-family:'Outfit',sans-serif;color:var(--text);outline:none;transition:border-color .2s;}
+.field-input:focus{border-color:rgba(255,71,87,.4);}
+.field-input.biz:focus{border-color:rgba(201,168,76,.4);}
+.field-input::placeholder{color:var(--sub);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.field select.field-input{cursor:pointer;}
+.field select.field-input option{background:var(--card);}
+
+.submit-btn{width:100%;padding:14px;border:none;border-radius:13px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;letter-spacing:.02em;transition:all .15s;margin-top:4px;}
+.submit-btn.city{background:linear-gradient(135deg,#ff4757,#ff6348);color:#fff;box-shadow:0 4px 20px rgba(255,71,87,.25);}
+.submit-btn.biz{background:linear-gradient(135deg,#b8942a,#d4aa40);color:#0a0b0e;box-shadow:0 4px 20px rgba(201,168,76,.2);}
+.submit-btn:active{transform:scale(.98);}
+.submit-btn:hover{opacity:.9;}
+
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;}
+.divider-line{flex:1;height:1px;background:var(--border);}
+.divider-txt{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);letter-spacing:.06em;text-transform:uppercase;}
+
+.demo-btn{width:100%;padding:11px;border:1px solid var(--border);border-radius:13px;cursor:pointer;background:transparent;font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);letter-spacing:.06em;text-transform:uppercase;transition:all .15s;}
+.demo-btn:hover{background:rgba(255,255,255,.03);color:var(--text);}
+
+.auth-error{background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.2);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--err);margin-bottom:12px;display:none;}
+.auth-success{background:rgba(61,224,160,.08);border:1px solid rgba(61,224,160,.2);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--green);margin-bottom:12px;display:none;}
+
+/* FOOTER */
+.auth-footer{text-align:center;margin-top:18px;font-size:12px;color:var(--sub);}
+.auth-footer a{color:var(--text);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+
+/* LOGGED IN STATE */
+.logged-card{padding:28px;display:none;text-align:center;}
+.logged-avatar{font-size:52px;margin-bottom:12px;}
+.logged-name{font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.logged-name.city{font-family:'Fraunces',serif;}
+.logged-name.biz{font-family:'Cormorant Garant',serif;font-size:22px;font-weight:700;}
+.logged-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);letter-spacing:.06em;margin-bottom:20px;}
+.app-launch-row{display:flex;gap:8px;margin-bottom:12px;}
+.launch-btn{flex:1;padding:12px 8px;border-radius:13px;cursor:pointer;border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.launch-btn:active{transform:scale(.97);}
+.launch-btn.city{background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.2);color:var(--city-col);}
+.launch-btn.biz{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:var(--biz-col);}
+.launch-btn-ico{font-size:22px;}
+.launch-btn-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;opacity:.7;}
+.logout-btn{width:100%;padding:10px;border:1px solid var(--border);border-radius:12px;cursor:pointer;background:transparent;font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);letter-spacing:.06em;text-transform:uppercase;transition:all .15s;}
+.logout-btn:hover{background:rgba(255,255,255,.03);}
+
+/* MOBILE */
+@media(max-width:480px){
+  .auth-wrap{padding:16px 12px;}
+  .auth-card-top{padding:22px 20px 0;}
+  .auth-form{padding:18px 20px 24px;}
+  .auth-headline{font-size:24px;}
+  .tabs{margin:0 -20px;padding:0 20px;}
+  .logged-card{padding:22px 20px;}
+}
+</style>
+</head>
+<body>
+<div class="ambient"><div class="amb-c1"></div><div class="amb-c2"></div><div class="amb-grid"></div></div>
+
+<div class="auth-wrap">
+
+  <!-- APP SWITCHER -->
+  <div class="app-switcher">
+    <div class="app-btn city active" id="sw-city" onclick="switchApp('city')">
+      <div class="app-btn-name">MYCITY</div>
+      <div class="app-btn-sub">Réseau de quartier</div>
+    </div>
+    <div class="app-btn biz" id="sw-biz" onclick="switchApp('biz')">
+      <div class="app-btn-name">BIZNODE</div>
+      <div class="app-btn-sub">Place de marché B2B</div>
+    </div>
+  </div>
+
+  <div class="auth-card">
+
+    <!-- TOP -->
+    <div class="auth-card-top" id="card-top">
+      <div class="auth-headline city" id="auth-headline">Rejoins ta <em>ville</em></div>
+      <div class="auth-sub" id="auth-sub">MYCITY · LAVAL · HUB NUMÉRIQUE LOCAL</div>
+      <div class="tabs">
+        <div class="tab active" id="tab-login" onclick="switchTab('login')">Connexion</div>
+        <div class="tab" id="tab-register" onclick="switchTab('register')">Créer un compte</div>
+      </div>
+    </div>
+
+    <!-- LOGGED IN -->
+    <div class="logged-card" id="logged-card">
+      <div class="logged-avatar" id="logged-avatar">😎</div>
+      <div class="logged-name city" id="logged-name">Alexandre Morin</div>
+      <div class="logged-sub" id="logged-sub">@alexmorin · LAVAL</div>
+      <div class="app-launch-row">
+        <button class="launch-btn city" id="btn-mycity" onclick="launchApp('mycity')">
+          <span class="launch-btn-ico">🏙️</span>
+          <span>MYCITY</span>
+          <span class="launch-btn-lbl">Version mobile</span>
+        </button>
+        <button class="launch-btn city" id="btn-mycity-desk" onclick="launchApp('mycity-desktop')">
+          <span class="launch-btn-ico">🖥️</span>
+          <span>MYCITY</span>
+          <span class="launch-btn-lbl">Version PC</span>
+        </button>
+      </div>
+      <div class="app-launch-row" id="biz-launch-row" style="display:none;">
+        <button class="launch-btn biz" onclick="launchApp('biznode')">
+          <span class="launch-btn-ico">🏭</span>
+          <span>BIZNODE</span>
+          <span class="launch-btn-lbl">Version mobile</span>
+        </button>
+        <button class="launch-btn biz" onclick="launchApp('biznode-desktop')">
+          <span class="launch-btn-ico">🖥️</span>
+          <span>BIZNODE</span>
+          <span class="launch-btn-lbl">Version PC</span>
+        </button>
+      </div>
+      <button class="logout-btn" onclick="logout()">Se déconnecter</button>
+    </div>
+
+    <!-- FORM: LOGIN -->
+    <form class="auth-form active" id="form-login" onsubmit="handleLogin(event)">
+      <div class="auth-error" id="login-error"></div>
+      <div class="field">
+        <label class="field-lbl">Email</label>
+        <input type="email" id="login-email" class="field-input" placeholder="votre@email.fr" required/>
+      </div>
+      <div class="field">
+        <label class="field-lbl">Mot de passe</label>
+        <input type="password" id="login-password" class="field-input" placeholder="••••••••" required/>
+      </div>
+      <button type="submit" class="submit-btn city" id="login-btn">Se connecter</button>
+      <div class="divider"><div class="divider-line"></div><div class="divider-txt">ou</div><div class="divider-line"></div></div>
+      <button type="button" class="demo-btn" id="demo-btn" onclick="fillDemo()">Utiliser le compte démo</button>
+    </form>
+
+    <!-- FORM: REGISTER -->
+    <form class="auth-form" id="form-register" onsubmit="handleRegister(event)">
+      <div class="auth-error" id="register-error"></div>
+      <div class="auth-success" id="register-success"></div>
+
+      <!-- PARTICULIER FIELDS -->
+      <div id="fields-particulier">
+        <div class="field-row">
+          <div class="field"><label class="field-lbl">Prénom</label><input type="text" id="reg-firstname" class="field-input" placeholder="Alex"/></div>
+          <div class="field"><label class="field-lbl">Nom</label><input type="text" id="reg-lastname" class="field-input" placeholder="Morin"/></div>
+        </div>
+        <div class="field"><label class="field-lbl">Pseudo</label><input type="text" id="reg-handle" class="field-input" placeholder="@monpseudo"/></div>
+      </div>
+
+      <!-- ENTREPRISE FIELDS -->
+      <div id="fields-entreprise" style="display:none;">
+        <div class="field"><label class="field-lbl">Nom de la société</label><input type="text" id="reg-company" class="field-input biz" placeholder="MA SOCIÉTÉ SAS"/></div>
+        <div class="field"><label class="field-lbl">Secteur d'activité</label>
+          <select id="reg-sector" class="field-input biz"><option value="">Choisir…</option><option>Informatique / Digital</option><option>BTP / Travaux</option><option>Industrie</option><option>Conseil / Services</option><option>Logistique</option><option>Agroalimentaire</option><option>Environnement / RSE</option></select>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="field-lbl">SIRET</label><input type="text" id="reg-siret" class="field-input biz" placeholder="82345678900012"/></div>
+          <div class="field"><label class="field-lbl">Nb. employés</label><input type="text" id="reg-employees" class="field-input biz" placeholder="ex: 45"/></div>
+        </div>
+      </div>
+
+      <div class="field"><label class="field-lbl">Email</label><input type="email" id="reg-email" class="field-input" placeholder="votre@email.fr"/></div>
+      <div class="field"><label class="field-lbl">Mot de passe</label><input type="password" id="reg-password" class="field-input" placeholder="8 caractères minimum"/></div>
+      <div class="field"><label class="field-lbl">Ville</label><input type="text" id="reg-city" class="field-input" placeholder="Laval" value="Laval"/></div>
+      <button type="submit" class="submit-btn city" id="register-btn">Créer mon compte</button>
+    </form>
+  </div>
+
+  <div class="auth-footer">Vous avez un compte ? <a onclick="switchTab('login')">Se connecter</a> · <a onclick="switchTab('register')">S'inscrire</a></div>
+</div>
+
+<script>
+/* ─── DB (inline simulation) ─── */
+const DB = {
+  users: [
+    {id:'u001',type:'particulier',email:'alex@mycity.fr',password:'demo123',name:'Alexandre Morin',handle:'@alexmorin',avatar:'😎',city:'Laval',app:'mycity'},
+    {id:'u002',type:'particulier',email:'sofia@mycity.fr',password:'demo123',name:'Sofía Martínez',handle:'@sofiamart',avatar:'🌸',city:'Laval',app:'mycity'},
+    {id:'b001',type:'entreprise',email:'contact@technovision.fr',password:'demo123',companyName:'TECHNOVISION SAS',sector:'Ingénierie · Conseil IT',logo:'🏭',city:'Laval',app:'biznode'},
+    {id:'b002',type:'entreprise',email:'direction@lavalnum.fr',password:'demo123',companyName:'LAVAL NUMÉRIQUE',sector:'Innovation · Tech',logo:'💡',city:'Laval',app:'biznode'},
+  ],
+  session: JSON.parse(localStorage.getItem('bncity_session') || 'null')
+};
+
+/* ─── APP STATE ─── */
+let currentApp = 'city'; // 'city' | 'biz'
+
+function switchApp(app) {
+  currentApp = app;
+  document.getElementById('sw-city').classList.toggle('active', app === 'city');
+  document.getElementById('sw-biz').classList.toggle('active', app === 'biz');
+
+  const hl = document.getElementById('auth-headline');
+  const sub = document.getElementById('auth-sub');
+  const loginBtn = document.getElementById('login-btn');
+  const registerBtn = document.getElementById('register-btn');
+  const demoBtn = document.getElementById('demo-btn');
+  const tabs = document.querySelectorAll('.tab');
+  const tabLogin = document.getElementById('tab-login');
+  const tabReg = document.getElementById('tab-register');
+
+  // Fields visibility
+  document.getElementById('fields-particulier').style.display = app === 'city' ? '' : 'none';
+  document.getElementById('fields-entreprise').style.display = app === 'biz' ? '' : 'none';
+
+  if(app === 'city') {
+    hl.className = 'auth-headline city'; hl.innerHTML = 'Rejoins ta <em>ville</em>';
+    sub.textContent = 'MYCITY · LAVAL · HUB NUMÉRIQUE LOCAL';
+    loginBtn.className = 'submit-btn city'; loginBtn.textContent = 'Se connecter';
+    registerBtn.className = 'submit-btn city'; registerBtn.textContent = 'Créer mon compte';
+    demoBtn.textContent = 'Utiliser le compte démo (particulier)';
+    tabLogin.className = 'tab active'; tabReg.className = 'tab';
+    document.querySelectorAll('.field-input').forEach(f => f.classList.remove('biz'));
+  } else {
+    hl.className = 'auth-headline biz'; hl.innerHTML = 'Accès <em>entreprise</em>';
+    sub.textContent = 'BIZNODE · RÉSEAU B2B PROFESSIONNEL';
+    loginBtn.className = 'submit-btn biz'; loginBtn.textContent = 'Accéder au tableau de bord';
+    registerBtn.className = 'submit-btn biz'; registerBtn.textContent = 'Créer mon espace entreprise';
+    demoBtn.textContent = 'Utiliser le compte démo (entreprise)';
+    tabLogin.className = 'tab biz-tab active'; tabReg.className = 'tab biz-tab';
+    document.querySelectorAll('.field-input').forEach(f => f.classList.add('biz'));
+  }
+  clearErrors();
+}
+
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('form-login').classList.toggle('active', isLogin);
+  document.getElementById('form-register').classList.toggle('active', !isLogin);
+  const prefix = currentApp === 'biz' ? 'biz-tab ' : '';
+  document.getElementById('tab-login').className = `tab ${prefix}${isLogin ? 'active' : ''}`.trim();
+  document.getElementById('tab-register').className = `tab ${prefix}${!isLogin ? 'active' : ''}`.trim();
+  clearErrors();
+}
+
+function clearErrors() {
+  ['login-error','register-error','register-success'].forEach(id => {
+    const el = document.getElementById(id);
+    el.style.display = 'none'; el.textContent = '';
+  });
+}
+
+function fillDemo() {
+  if(currentApp === 'city') {
+    document.getElementById('login-email').value = 'alex@mycity.fr';
+    document.getElementById('login-password').value = 'demo123';
+  } else {
+    document.getElementById('login-email').value = 'contact@technovision.fr';
+    document.getElementById('login-password').value = 'demo123';
+  }
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const user = DB.users.find(u => u.email === email && u.password === pass);
+  const errEl = document.getElementById('login-error');
+
+  if(!user) {
+    errEl.textContent = 'Email ou mot de passe incorrect. Essayez le compte démo.';
+    errEl.style.display = 'block'; return;
+  }
+
+  // Check app match
+  const expectedApp = currentApp === 'city' ? 'mycity' : 'biznode';
+  if(user.app !== expectedApp) {
+    errEl.textContent = `Ce compte est associé à ${user.app === 'mycity' ? 'MYCITY' : 'BIZNODE'}. Changez l\'onglet.`;
+    errEl.style.display = 'block'; return;
+  }
+
+  loginSuccess(user);
+}
+
+function handleRegister(e) {
+  e.preventDefault();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-password').value;
+  const city = document.getElementById('reg-city').value.trim() || 'Laval';
+  const errEl = document.getElementById('register-error');
+  const sucEl = document.getElementById('register-success');
+
+  if(DB.users.find(u => u.email === email)) {
+    errEl.textContent = 'Cet email est déjà utilisé.';
+    errEl.style.display = 'block'; return;
+  }
+  if(pass.length < 6) {
+    errEl.textContent = 'Mot de passe trop court (6 caractères minimum).';
+    errEl.style.display = 'block'; return;
+  }
+
+  let newUser;
+  if(currentApp === 'city') {
+    const fn = document.getElementById('reg-firstname').value.trim();
+    const ln = document.getElementById('reg-lastname').value.trim();
+    const handle = document.getElementById('reg-handle').value.trim() || '@user';
+    if(!fn || !ln) { errEl.textContent = 'Prénom et nom requis.'; errEl.style.display='block'; return; }
+    newUser = {id:'u'+Date.now(),type:'particulier',email,password:pass,name:`${fn} ${ln}`,handle,avatar:'😊',city,app:'mycity'};
+  } else {
+    const co = document.getElementById('reg-company').value.trim();
+    const sec = document.getElementById('reg-sector').value;
+    if(!co || !sec) { errEl.textContent = 'Nom de société et secteur requis.'; errEl.style.display='block'; return; }
+    newUser = {id:'b'+Date.now(),type:'entreprise',email,password:pass,companyName:co,sector:sec,logo:'🏢',city,app:'biznode'};
+  }
+
+  DB.users.push(newUser);
+  sucEl.textContent = '✅ Compte créé avec succès ! Connexion en cours…';
+  sucEl.style.display = 'block';
+  setTimeout(() => loginSuccess(newUser), 1200);
+}
+
+function loginSuccess(user) {
+  localStorage.setItem('bncity_session', JSON.stringify(user));
+  DB.session = user;
+  showLoggedIn(user);
+}
+
+function showLoggedIn(user) {
+  document.getElementById('card-top').style.display = 'none';
+  document.getElementById('form-login').classList.remove('active');
+  document.getElementById('form-register').classList.remove('active');
+  const lc = document.getElementById('logged-card');
+  lc.style.display = 'block';
+
+  const isCity = user.app === 'mycity';
+  document.getElementById('logged-avatar').textContent = isCity ? (user.avatar || '😊') : (user.logo || '🏢');
+  const nameEl = document.getElementById('logged-name');
+  nameEl.className = isCity ? 'logged-name city' : 'logged-name biz';
+  nameEl.textContent = isCity ? user.name : user.companyName;
+  document.getElementById('logged-sub').textContent = isCity ? `${user.handle} · ${user.city.toUpperCase()}` : `${user.sector} · ${user.city.toUpperCase()}`;
+
+  // Show appropriate launch buttons
+  document.getElementById('btn-mycity').parentElement.style.display = isCity ? 'flex' : 'none';
+  document.getElementById('btn-mycity-desk').parentElement.style.display = isCity ? 'flex' : 'none';
+  document.getElementById('biz-launch-row').style.display = !isCity ? 'flex' : 'none';
+  // Both rows are same element, fix:
+  const rows = document.querySelectorAll('.app-launch-row');
+  if(isCity){rows[0].style.display='flex';rows[1].style.display='flex';document.getElementById('biz-launch-row').style.display='none';}
+  else{rows[0].style.display='none';rows[1].style.display='none';document.getElementById('biz-launch-row').style.display='flex';}
+}
+
+function launchApp(appId) {
+  const targets = {
+    'mycity': 'iphone-mycity.html',
+    'mycity-desktop': 'mycity-desktop.html',
+    'biznode': 'iphone-biznode.html',
+    'biznode-desktop': 'biznode-desktop.html'
+  };
+  window.location.href = targets[appId];
+}
+
+function logout() {
+  localStorage.removeItem('bncity_session');
+  DB.session = null;
+  document.getElementById('card-top').style.display = '';
+  document.getElementById('logged-card').style.display = 'none';
+  switchTab('login');
+}
+
+/* ─── INIT ─── */
+(function init() {
+  const saved = DB.session;
+  if(saved) {
+    switchApp(saved.app === 'mycity' ? 'city' : 'biz');
+    showLoggedIn(saved);
+  } else {
+    switchApp('city');
+  }
+})();
+</script>
+</body>
+</html>
