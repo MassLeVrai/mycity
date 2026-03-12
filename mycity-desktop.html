@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MYCITY — Hub numérique de ta ville</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0ece4;--surface:#f7f4ef;--card:#fff;--card2:#faf8f5;
+  --text:#1a1612;--sub:#8a8070;--border:#e8e2d8;--border2:#ddd7cc;
+  --red:#ff4757;--green:#2ed573;--blue:#1e90ff;
+  --purple:#a55eea;--orange:#ff6348;--yellow:#ffa502;
+  --nav-h:60px;
+  --sidebar-w:240px;
+}
+body.dark{
+  --bg:#0c0d10;--surface:#111318;--card:#181c22;--card2:#1a1e26;
+  --text:#eef0f5;--sub:#5a6070;--border:#252830;--border2:#2e3440;
+}
+
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;display:flex;flex-direction:column;transition:background .35s,color .35s;}
+
+/* ─── TOPNAV ─── */
+.topnav{height:var(--nav-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:fixed;top:0;left:0;right:0;z-index:300;transition:background .35s,border-color .35s;}
+.tn-brand{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.02em;flex-shrink:0;}
+.tn-brand span{color:var(--red);}
+.tn-search{flex:1;max-width:380px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;display:flex;align-items:center;gap:8px;transition:border-color .2s;}
+.tn-search:focus-within{border-color:rgba(255,71,87,.4);}
+.tn-search input{flex:1;background:transparent;border:none;outline:none;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);}
+.tn-search input::placeholder{color:var(--sub);}
+.tn-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.tn-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--card);color:var(--text);transition:all .15s;}
+.tn-btn:hover{border-color:rgba(255,71,87,.3);}
+.tn-btn.primary{background:var(--red);border-color:var(--red);color:#fff;}
+.tn-btn.primary:hover{opacity:.9;}
+.tn-switch{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.05));border:1px solid rgba(201,168,76,.25);cursor:pointer;font-size:11px;font-weight:700;color:#c9a84c;transition:all .2s;}
+.tn-switch:hover{background:rgba(201,168,76,.18);}
+.tn-avatar{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;background:linear-gradient(135deg,#ff4757,#ff6348);border:2px solid rgba(255,71,87,.2);}
+.notif-btn{position:relative;width:34px;height:34px;border-radius:10px;background:var(--card);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;}
+.notif-btn:hover{border-color:rgba(255,71,87,.3);}
+.notif-dot{position:absolute;top:-2px;right:-2px;width:10px;height:10px;background:var(--red);border-radius:50%;border:2px solid var(--surface);}
+
+/* ─── LAYOUT ─── */
+.layout{display:flex;margin-top:var(--nav-h);height:calc(100vh - var(--nav-h));}
+
+/* ─── SIDEBAR ─── */
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 12px;gap:4px;flex-shrink:0;overflow-y:auto;transition:background .35s,border-color .35s;}
+.sidebar::-webkit-scrollbar{display:none;}
+.sb-label{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);padding:8px 10px 4px;margin-top:6px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;color:var(--sub);transition:all .15s;}
+.sb-item:hover{background:rgba(255,71,87,.06);color:var(--text);}
+.sb-item.active{background:rgba(255,71,87,.1);color:var(--red);}
+.sb-item-ico{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.sb-item-badge{margin-left:auto;background:var(--red);color:#fff;font-size:8px;font-weight:800;padding:2px 7px;border-radius:999px;}
+.sb-divider{height:1px;background:var(--border);margin:8px 10px;}
+.sb-city-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-top:auto;}
+.sb-city-title{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin-bottom:8px;}
+.sb-city-stat{display:flex;justify-content:space-between;margin-bottom:4px;}
+.sb-city-stat:last-child{margin-bottom:0;}
+.sb-city-lbl{font-size:10px;color:var(--sub);font-weight:500;}
+.sb-city-val{font-size:10px;font-weight:800;color:var(--text);}
+.theme-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;cursor:pointer;margin-top:4px;border:1px solid var(--border);background:var(--card);transition:all .2s;}
+.theme-row:hover{border-color:rgba(255,71,87,.2);}
+.tt-track{width:32px;height:18px;border-radius:9px;background:var(--border2);position:relative;transition:background .3s;flex-shrink:0;}
+.tt-track.on{background:var(--red);}
+.tt-knob{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+.tt-track.on .tt-knob{transform:translateX(14px);}
+.theme-lbl{font-size:11px;font-weight:700;color:var(--sub);}
+
+/* ─── MAIN ─── */
+.main{flex:1;overflow-y:auto;position:relative;}
+.main::-webkit-scrollbar{width:5px;}
+.main::-webkit-scrollbar-track{background:transparent;}
+.main::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ─── VIEWS ─── */
+.view{display:none;min-height:100%;animation:vIn .3s cubic-bezier(.16,1,.3,1);}
+.view.active{display:block;}
+@keyframes vIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.view-header{padding:28px 32px 16px;border-bottom:1px solid var(--border);}
+.vh-title{font-family:'Fraunces',serif;font-size:30px;font-weight:900;color:var(--text);line-height:1.1;}
+.vh-title em{color:var(--red);font-style:italic;}
+.vh-sub{font-size:13px;color:var(--sub);margin-top:4px;}
+.view-body{padding:24px 32px;}
+
+/* ─── FEED LAYOUT ─── */
+.feed-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;}
+@media(max-width:1100px){.feed-layout{grid-template-columns:1fr;}.feed-aside{display:none;}}
+.feed-main{}
+.feed-aside{}
+
+/* ─── POST COMPOSER ─── */
+.composer{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:16px;margin-bottom:20px;transition:border-color .2s;}
+.composer:hover{border-color:rgba(255,71,87,.2);}
+.composer-row{display:flex;align-items:center;gap:12px;}
+.composer-av{width:40px;height:40px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:linear-gradient(135deg,#ff4757,#ff6348);}
+.composer-input{flex:1;background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:10px 16px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);cursor:pointer;transition:border-color .2s;}
+.composer-input:hover{border-color:rgba(255,71,87,.3);}
+.composer-actions{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.composer-action{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;color:var(--sub);background:var(--card2);border:1.5px solid var(--border);transition:all .15s;}
+.composer-action:hover{border-color:rgba(255,71,87,.2);color:var(--text);}
+
+/* ─── POST CARD ─── */
+.post-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px;cursor:pointer;transition:all .15s;}
+.post-card:hover{border-color:rgba(255,71,87,.15);box-shadow:0 4px 20px rgba(0,0,0,.05);}
+.post-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.post-av{width:44px;height:44px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.post-name{font-size:14px;font-weight:800;color:var(--text);}
+.post-time{font-size:11px;color:var(--sub);margin-top:2px;}
+.post-badge{font-size:10px;font-weight:800;padding:4px 11px;border-radius:999px;letter-spacing:.05em;text-transform:uppercase;margin-left:auto;}
+.b-help{background:#fff3e0;color:#e65100;} .b-event{background:#e8f4ff;color:#0d47a1;}
+.b-market{background:#e8fce8;color:#1b5e20;} .b-social{background:#fce4ec;color:#880e4f;}
+.b-info{background:#f3e5f5;color:#4a148c;} .b-mine{background:#fff0f5;color:var(--red);}
+.post-text{font-size:14px;color:var(--text);line-height:1.65;margin-bottom:12px;}
+.post-text strong{font-weight:800;}
+.post-actions{display:flex;gap:14px;align-items:center;}
+.p-action{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--sub);cursor:pointer;padding:5px 10px;border-radius:8px;transition:all .15s;}
+.p-action:hover{background:rgba(255,71,87,.06);color:var(--red);}
+
+/* ─── ASIDE WIDGETS ─── */
+.aside-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:16px;margin-bottom:16px;}
+.aside-title{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);margin-bottom:14px;}
+.ia-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;cursor:pointer;}
+.ia-item:last-child{margin-bottom:0;}
+.ia-ico{font-size:18px;flex-shrink:0;margin-top:2px;}
+.ia-txt{font-size:12px;color:var(--sub);line-height:1.5;}
+.ia-txt strong{color:var(--text);}
+.ia-live{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);display:inline-block;margin-right:4px;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.event-mini{display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer;}
+.event-mini:last-child{margin-bottom:0;}
+.event-mini-date{width:44px;height:44px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+.event-mini-d{font-family:'Fraunces',serif;font-size:18px;font-weight:900;color:var(--text);line-height:1;}
+.event-mini-m{font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);}
+.event-mini-title{font-size:12px;font-weight:700;color:var(--text);line-height:1.2;}
+.event-mini-meta{font-size:10px;color:var(--sub);margin-top:2px;}
+
+/* ─── EVENTS GRID ─── */
+.events-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.ev-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .15s;}
+.ev-card:hover{border-color:rgba(255,71,87,.2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.08);}
+.ev-emoji-header{height:100px;display:flex;align-items:center;justify-content:center;font-size:52px;}
+.ev-body{padding:16px;}
+.ev-cat{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:7px;margin-bottom:7px;}
+.ev-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:5px;}
+.ev-meta{font-size:11px;color:var(--sub);}
+.ev-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.ev-join{background:var(--text);color:var(--bg);border:none;border-radius:9px;padding:7px 16px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:opacity .15s;}
+.ev-join:active{opacity:.8;}
+
+/* ─── MARKET GRID ─── */
+.market-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.mkt-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .15s;}
+.mkt-card:hover{border-color:rgba(255,71,87,.2);transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.07);}
+.mkt-img{height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;}
+.mkt-body{padding:12px;}
+.mkt-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.mkt-price{font-family:'Fraunces',serif;font-size:20px;font-weight:900;color:var(--red);}
+.mkt-loc{font-size:10px;color:var(--sub);margin-top:3px;}
+
+/* ─── PROFILE DESKTOP ─── */
+.profile-desktop{display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;}
+@media(max-width:900px){.profile-desktop{grid-template-columns:1fr;}}
+.profile-left-card{background:var(--card);border:1.5px solid var(--border);border-radius:20px;overflow:hidden;}
+.profile-hero-desk{background:linear-gradient(160deg,#1a1612,#2d2419);padding:28px;text-align:center;}
+.p-av-desk{width:80px;height:80px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 14px;border:3px solid rgba(255,255,255,.12);}
+.p-name-desk{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:#fff;}
+.p-handle-desk{font-size:12px;color:rgba(255,255,255,.5);margin-top:3px;}
+.p-stats-desk{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,.08);}
+.pstat-desk{padding:14px;text-align:center;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);}
+.pstat-desk:nth-child(2n){border-right:none;}
+.pstat-val{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:#fff;}
+.pstat-lbl{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:2px;}
+.profile-body-desk{padding:18px;}
+.edit-profile-btn{width:100%;padding:10px;border:1.5px solid var(--border);border-radius:12px;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;transition:all .15s;margin-bottom:14px;}
+.edit-profile-btn:hover{background:rgba(255,71,87,.06);border-color:rgba(255,71,87,.25);color:var(--red);}
+.xp-card{background:var(--card2);border:1.5px solid var(--border);border-radius:14px;padding:13px;}
+.xp-title{font-size:11px;font-weight:800;color:var(--sub);margin-bottom:8px;}
+.xp-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:5px;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--orange));border-radius:3px;transition:width 1s cubic-bezier(.16,1,.3,1);}
+.xp-val{font-size:11px;font-weight:700;color:var(--sub);}
+.badges-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.badge-ico{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.badge-lbl{font-size:9px;font-weight:700;color:var(--sub);text-align:center;}
+.profile-annonces-card{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:20px;}
+.pa-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:14px;}
+.my-post-card{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.my-post-card:last-child{border-bottom:none;}
+.my-post-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.my-post-title{font-size:13px;font-weight:700;color:var(--text);}
+.my-post-meta{font-size:10px;color:var(--sub);margin-top:2px;}
+.my-post-del{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;background:rgba(255,71,87,.08);color:var(--red);margin-left:auto;flex-shrink:0;transition:all .15s;}
+.my-post-del:hover{background:rgba(255,71,87,.15);}
+
+/* ─── MODAL ─── */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(10,8,5,.5);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;animation:ovIn .2s ease both;}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+.modal-box{background:var(--surface);border:1.5px solid var(--border);border-radius:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:boxIn .3s cubic-bezier(.16,1,.3,1) both;}
+.modal-box::-webkit-scrollbar{display:none;}
+@keyframes boxIn{from{transform:scale(.95);opacity:0}to{transform:none;opacity:1}}
+.modal-inner{padding:28px;}
+.modal-title{font-family:'Fraunces',serif;font-size:24px;font-weight:900;color:var(--text);margin-bottom:20px;}
+.modal-title em{color:var(--red);font-style:italic;}
+.field{margin-bottom:14px;}
+.field-lbl{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);margin-bottom:6px;display:block;}
+.field input,.field textarea,.field select{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none;transition:border-color .2s;resize:none;}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(255,71,87,.5);}
+.field input::placeholder,.field textarea::placeholder{color:var(--sub);}
+.type-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.type-chip{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;transition:all .15s;background:var(--card);}
+.type-chip.sel{background:var(--text);color:#fff;border-color:var(--text);}
+.emoji-picker{display:flex;gap:8px;flex-wrap:wrap;}
+.emoji-opt{width:40px;height:40px;border-radius:12px;background:var(--card);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all .15s;}
+.emoji-opt.sel{border-color:var(--red);background:#fff0f5;transform:scale(1.1);}
+body.dark .emoji-opt.sel{background:#2a0010;}
+.save-btn{width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,var(--red),var(--orange));font-size:15px;font-weight:800;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 4px 16px rgba(255,71,87,.25);transition:all .15s;margin-top:6px;}
+.save-btn:active{transform:scale(.98);}
+.cancel-btn{width:100%;padding:11px;border:1.5px solid var(--border);border-radius:14px;cursor:pointer;background:transparent;font-size:13px;font-weight:700;color:var(--sub);font-family:'Plus Jakarta Sans',sans-serif;margin-top:10px;transition:all .15s;}
+.cancel-btn:hover{background:rgba(255,71,87,.05);}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;top:76px;right:24px;z-index:600;background:rgba(26,22,18,.94);border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.25);transform:translateX(20px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);pointer-events:none;min-width:240px;}
+.toast.show{transform:none;opacity:1;}
+.toast-ico{font-size:16px;}
+.toast-title{font-size:13px;font-weight:800;color:#fff;}
+.toast-txt{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px;}
+
+/* ─── MAP ─── */
+.map-wrap{background:#e8e4da;border-radius:20px;border:1.5px solid var(--border);position:relative;overflow:hidden;height:460px;}
+body.dark .map-wrap{background:#181c24;}
+.map-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(26,22,18,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(26,22,18,.05) 1px,transparent 1px);background-size:36px 36px;}
+body.dark .map-grid-bg{background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);}
+.map-filters{position:absolute;top:14px;left:14px;display:flex;gap:8px;z-index:10;flex-wrap:wrap;}
+.mf{background:var(--card);border:1.5px solid var(--border);border-radius:999px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.07);}
+.mf.active{background:var(--text);color:#fff;border-color:var(--text);}
+.map-pin{position:absolute;transform:translate(-50%,-100%);cursor:pointer;transition:transform .15s;z-index:5;}
+.map-pin:hover{transform:translate(-50%,-100%) scale(1.15);}
+.map-pin-bubble{background:var(--card);border-radius:11px;padding:6px 10px;font-size:11px;font-weight:800;white-space:nowrap;box-shadow:0 3px 14px rgba(0,0,0,.13);border:1.5px solid var(--border);display:flex;align-items:center;gap:5px;}
+.map-pin-tail{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid var(--card);margin-top:-1px;}
+
+/* ─── MOBILE HIDE ─── */
+@media(max-width:680px){
+  .sidebar{display:none;}
+  .topnav{padding:0 14px;}
+  .tn-search{display:none;}
+  .view-body{padding:16px;}
+  .view-header{padding:20px 16px 12px;}
+  .feed-layout{grid-template-columns:1fr;}
+  .events-grid{grid-template-columns:1fr;}
+  .market-grid{grid-template-columns:1fr 1fr;}
+  .profile-desktop{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── TOPNAV ─── -->
+<nav class="topnav">
+  <div class="tn-brand">MY<span>CITY</span></div>
+  <div class="tn-search"><span>🔍</span><input type="text" placeholder="Rechercher dans Laval…"/></div>
+  <div class="tn-right">
+    <div class="tn-switch" onclick="window.location.href='iphone-biznode.html'" title="Aller sur BizNode">
+      <span>🏭</span><span>BizNode Pro</span>
+    </div>
+    <div class="tn-btn" onclick="window.location.href='auth.html'">← Accueil</div>
+    <div class="tn-btn primary" onclick="openCreateModal()">+ Publier</div>
+    <div class="notif-btn" onclick="toast('🔔','Notifications','3 nouvelles activités dans ton quartier')">🔔<div class="notif-dot"></div></div>
+    <div class="tn-avatar" id="tn-avatar" onclick="switchView('profile')">😎</div>
+  </div>
+</nav>
+
+<!-- ─── LAYOUT ─── -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-label">Navigation</div>
+    <div class="sb-item active" id="sb-feed" onclick="switchView('feed')"><div class="sb-item-ico">🏠</div>Fil d'actualité</div>
+    <div class="sb-item" id="sb-events" onclick="switchView('events')"><div class="sb-item-ico">🎉</div>Événements</div>
+    <div class="sb-item" id="sb-map" onclick="switchView('map')"><div class="sb-item-ico">🗺️</div>Carte de la ville</div>
+    <div class="sb-item" id="sb-market" onclick="switchView('market')"><div class="sb-item-ico">🛍️</div>Marketplace<div class="sb-item-badge">14</div></div>
+    <div class="sb-item" id="sb-profile" onclick="switchView('profile')"><div class="sb-item-ico">👤</div>Mon profil</div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Groupes</div>
+    <div class="sb-item" onclick="toast('⚽','Sport','Groupe Sport Laval')"><div class="sb-item-ico">⚽</div>Sport</div>
+    <div class="sb-item" onclick="toast('🎨','Art','Groupe Art & Culture')"><div class="sb-item-ico">🎨</div>Art & Culture</div>
+    <div class="sb-item" onclick="toast('💼','Entrepreneurs','Groupe Entrepreneurs')"><div class="sb-item-ico">💼</div>Entrepreneurs</div>
+    <div class="sb-item" onclick="toast('🆘','Entraide','Groupe Entraide')"><div class="sb-item-ico">🆘</div>Entraide</div>
+    <div class="sb-divider"></div>
+    <div class="sb-city-card">
+      <div class="sb-city-title">📍 Laval · Live</div>
+      <div class="sb-city-stat"><span class="sb-city-lbl">Membres</span><span class="sb-city-val" id="stat-members">1 240</span></div>
+      <div class="sb-city-stat"><span class="sb-city-lbl">Annonces</span><span class="sb-city-val" id="stat-posts">47</span></div>
+      <div class="sb-city-stat"><span class="sb-city-lbl">Events</span><span class="sb-city-val" id="stat-events">38</span></div>
+    </div>
+    <div class="theme-row" onclick="toggleTheme()">
+      <div class="tt-track" id="tt-track"><div class="tt-knob"></div></div>
+      <span class="theme-lbl" id="theme-lbl">Mode sombre</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ╔══ FIL ══╗ -->
+    <div class="view active" id="view-feed">
+      <div class="view-header">
+        <div class="vh-title">Fil de <em>la ville</em></div>
+        <div class="vh-sub">📍 Laval — Actualités et annonces de tes voisins</div>
+      </div>
+      <div class="view-body">
+        <div class="feed-layout">
+          <div class="feed-main">
+            <div class="composer">
+              <div class="composer-row">
+                <div class="composer-av" id="composer-av">😎</div>
+                <div class="composer-input" onclick="openCreateModal()">Partage quelque chose avec Laval…</div>
+              </div>
+              <div class="composer-actions">
+                <div class="composer-action" onclick="openCreateModal('event')">🎉 Événement</div>
+                <div class="composer-action" onclick="openCreateModal('market')">🛍️ Vente</div>
+                <div class="composer-action" onclick="openCreateModal('help')">🆘 Entraide</div>
+                <div class="composer-action" onclick="openCreateModal('info')">ℹ️ Info</div>
+              </div>
+            </div>
+            <div id="feed-posts"></div>
+          </div>
+          <div class="feed-aside">
+            <div class="aside-card">
+              <div class="aside-title"><span class="ia-live"></span>IA · Suggestions</div>
+              <div class="ia-item" onclick="switchView('events')"><div class="ia-ico">🎾</div><div class="ia-txt"><strong>Match tennis samedi</strong> — 3 joueurs à ton niveau à 500m</div></div>
+              <div class="ia-item" onclick="switchView('market')"><div class="ia-ico">🚲</div><div class="ia-txt"><strong>VTT 80€</strong> — Correspond à ta recherche, Laval-Nord</div></div>
+              <div class="ia-item" onclick="toast('🤝','Connexion','Sofía et toi avez 3 intérêts en commun !')"><div class="ia-ico">👋</div><div class="ia-txt"><strong>Rencontre Sofía M.</strong> — Entrepreneuse, même quartier</div></div>
+            </div>
+            <div class="aside-card">
+              <div class="aside-title">🎉 Cette semaine</div>
+              <div id="aside-events"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ╔══ EVENTS ══╗ -->
+    <div class="view" id="view-events">
+      <div class="view-header">
+        <div class="vh-title">Événe<em>ments</em></div>
+        <div class="vh-sub">📍 Laval — Sorties, activités et rencontres</div>
+      </div>
+      <div class="view-body">
+        <div class="events-grid" id="events-grid"></div>
+      </div>
+    </div>
+
+    <!-- ╔══ MAP ══╗ -->
+    <div class="view" id="view-map">
+      <div class="view-header">
+        <div class="vh-title">Carte de <em>la ville</em></div>
+        <div class="vh-sub">📍 Laval — Découvre ce qui se passe autour de toi</div>
+      </div>
+      <div class="view-body">
+        <div class="map-wrap">
+          <div class="map-grid-bg"></div>
+          <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.4" viewBox="0 0 800 460" preserveAspectRatio="none">
+            <path d="M0 230 Q200 190 400 230 Q600 270 800 230" stroke="#d4cfc5" stroke-width="10" fill="none"/>
+            <path d="M400 0 Q380 115 400 230 Q420 345 400 460" stroke="#d4cfc5" stroke-width="10" fill="none"/>
+            <path d="M0 100 Q200 120 400 100 Q600 80 800 100" stroke="#ccc9bf" stroke-width="6" fill="none"/>
+            <path d="M0 360 Q200 340 400 360 Q600 380 800 360" stroke="#ccc9bf" stroke-width="6" fill="none"/>
+            <path d="M160 0 Q150 115 160 230 Q170 345 160 460" stroke="#ccc9bf" stroke-width="6" fill="none"/>
+            <path d="M640 0 Q630 115 640 230 Q650 345 640 460" stroke="#ccc9bf" stroke-width="6" fill="none"/>
+            <rect x="40" y="30" width="50" height="34" rx="5" fill="#ddd9d0" opacity=".8"/>
+            <rect x="480" y="40" width="60" height="36" rx="5" fill="#ddd9d0" opacity=".8"/>
+            <rect x="40" y="290" width="55" height="38" rx="5" fill="#ddd9d0" opacity=".8"/>
+            <circle cx="280" cy="320" r="35" fill="#c8e6c0" opacity=".8"/>
+          </svg>
+          <div class="map-filters">
+            <div class="mf active" onclick="activateMf(this,'Tous')">Tous</div>
+            <div class="mf" onclick="activateMf(this,'Événements')">🎉 Événements</div>
+            <div class="mf" onclick="activateMf(this,'Commerces')">🏪 Commerces</div>
+            <div class="mf" onclick="activateMf(this,'Entraide')">🆘 Entraide</div>
+            <div class="mf" onclick="activateMf(this,'Market')">🛍️ Market</div>
+          </div>
+          <div id="map-pins"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ╔══ MARKET ══╗ -->
+    <div class="view" id="view-market">
+      <div class="view-header">
+        <div class="vh-title">Mar<em>ket</em></div>
+        <div class="vh-sub">📍 Laval seulement — Ventes entre voisins</div>
+      </div>
+      <div class="view-body">
+        <div class="market-grid" id="market-grid"></div>
+      </div>
+    </div>
+
+    <!-- ╔══ PROFIL ══╗ -->
+    <div class="view" id="view-profile">
+      <div class="view-header">
+        <div class="vh-title">Mon <em>profil</em></div>
+        <div class="vh-sub">Gérer tes informations et tes annonces</div>
+      </div>
+      <div class="view-body">
+        <div class="profile-desktop">
+          <div>
+            <div class="profile-left-card">
+              <div class="profile-hero-desk">
+                <div class="p-av-desk" id="p-av" style="background:linear-gradient(135deg,#ff4757,#ff6348)">😎</div>
+                <div class="p-name-desk" id="p-name">Lucas Martin</div>
+                <div class="p-handle-desk" id="p-handle">@lucas.laval</div>
+                <div class="p-stats-desk">
+                  <div class="pstat-desk"><div class="pstat-val" id="ps-vibes">847</div><div class="pstat-lbl">Vibes</div></div>
+                  <div class="pstat-desk"><div class="pstat-val" id="ps-amis">124</div><div class="pstat-lbl">Amis</div></div>
+                  <div class="pstat-desk"><div class="pstat-val" id="ps-events">31</div><div class="pstat-lbl">Events</div></div>
+                  <div class="pstat-desk"><div class="pstat-val" id="ps-posts">0</div><div class="pstat-lbl">Annonces</div></div>
+                </div>
+              </div>
+              <div class="profile-body-desk">
+                <button class="edit-profile-btn" onclick="openEditProfileModal()">✏️ Modifier le profil</button>
+                <div class="xp-card">
+                  <div class="xp-title">⚡ <span id="p-level">Citoyen Pro</span> · <span id="p-xp">2 340</span> XP</div>
+                  <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:68%"></div></div>
+                  <div class="xp-val">68% vers le niveau suivant</div>
+                </div>
+                <div class="badges-row" id="badges-row"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="profile-annonces-card">
+              <div class="pa-title">Mes annonces</div>
+              <div id="my-annonces"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ─── MODAL CREATE ─── -->
+<div class="modal-overlay" id="modal-create" onclick="closeModalCreate(event)">
+  <div class="modal-box">
+    <div class="modal-inner">
+      <div class="modal-title">Publier une <em>annonce</em></div>
+      <div class="field"><div class="field-lbl">Type</div><div class="type-chips" id="create-types"></div></div>
+      <div class="field"><div class="field-lbl">Emoji</div><div class="emoji-picker" id="create-emojis"></div></div>
+      <div class="field"><div class="field-lbl">Titre</div><input type="text" id="create-title" placeholder="Titre de ton annonce"/></div>
+      <div class="field"><div class="field-lbl">Description</div><textarea id="create-desc" rows="3" placeholder="Décris ton annonce…"></textarea></div>
+      <div class="field" id="create-price-field"><div class="field-lbl">Prix (€)</div><input type="number" id="create-price" placeholder="ex: 80"/></div>
+      <div class="field"><div class="field-lbl">Quartier</div>
+        <select id="create-loc"><option>Centre-ville</option><option>Laval-Nord</option><option>Laval-Sud</option><option>Saint-Nicolas</option><option>Laval-Est</option><option>Quartier Gare</option></select>
+      </div>
+      <button class="save-btn" onclick="saveAnnonce()">Publier l'annonce</button>
+      <button class="cancel-btn" onclick="document.getElementById('modal-create').classList.remove('open')">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL EDIT PROFILE ─── -->
+<div class="modal-overlay" id="modal-profile" onclick="closeModalProfile(event)">
+  <div class="modal-box">
+    <div class="modal-inner">
+      <div class="modal-title">Modifier mon <em>profil</em></div>
+      <div class="field"><div class="field-lbl">Avatar & couleur</div><div class="emoji-picker" id="profile-emojis"></div></div>
+      <div class="field"><div class="field-lbl">Nom</div><input type="text" id="edit-name" placeholder="Ton nom"/></div>
+      <div class="field"><div class="field-lbl">Pseudo</div><input type="text" id="edit-handle" placeholder="monpseudo"/></div>
+      <div class="field"><div class="field-lbl">Ville</div><input type="text" id="edit-city" placeholder="Laval"/></div>
+      <div class="field"><div class="field-lbl">Membre depuis</div><input type="text" id="edit-since" placeholder="2024"/></div>
+      <div class="field"><div class="field-lbl">Bio</div><textarea id="edit-bio" rows="2" placeholder="Quelques mots…" maxlength="120"></textarea></div>
+      <button class="save-btn" onclick="saveProfile()">Enregistrer le profil</button>
+      <button class="cancel-btn" onclick="document.getElementById('modal-profile').classList.remove('open')">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"><div class="toast-ico" id="t-ico">✅</div><div class="toast-body"><div class="toast-title" id="t-title"></div><div class="toast-txt" id="t-txt"></div></div></div>
+
+<script>
+/* ═══ STATE ═══ */
+const STATE = {
+  profile:{name:'Lucas Martin',handle:'lucas.laval',av:'😎',avBg:'linear-gradient(135deg,#ff4757,#ff6348)',city:'Laval',since:'2019',bio:'Passionné de tech. Toujours partant pour un bon plan à Laval !',level:'Citoyen Pro',xp:2340,xpPct:68,vibes:847,amis:124,events:31},
+  annonces:[],
+};
+const DEFAULT_POSTS=[
+  {id:'p1',av:'😤',avBg:'#fce4ec',name:'Thomas R.',time:'12 min',type:'help',badge:'🆘 Entraide',badgeCls:'b-help',text:'<strong>Quelqu\'un peut m\'aider à porter un canapé</strong> au 3ème sans ascenseur ? Dimanche 14h, quartier Saint-Nicolas. Je rembourse en pizza 🍕',likes:14,comments:8,mine:false},
+  {id:'p2',av:'🎸',avBg:'#e8f4ff',name:'Mairie de Laval',time:'1h',type:'event',badge:'🎉 Événement',badgeCls:'b-event',text:'<strong>Concert Jazz gratuit ce soir !</strong> Place de la Mairie à 20h30. Venez nombreux 🎷🥁',likes:142,comments:37,mine:false},
+  {id:'p3',av:'🚲',avBg:'#e8fce8',name:'Sofía M.',time:'2h',type:'market',badge:'🛍️ Vente',badgeCls:'b-market',text:'Je vends mon <strong>VTT Scott 2021</strong> cause déménagement. 80€, excellent état, visible à Laval-Nord 👇',likes:9,comments:5,mine:false},
+  {id:'p4',av:'☕',avBg:'#fff3e0',name:'Le Café du Coin',time:'3h',type:'shop',badge:'🏪 Commerce',badgeCls:'b-info',text:'<strong>-20% sur les croissants</strong> tous les matins avant 8h30 ! Venez rue de la Paix 🥐☕',likes:67,comments:12,mine:false},
+];
+const DEFAULT_EVENTS=[
+  {day:'9',month:'Mars',emoji:'🎸',color:'#fff0f5',catColor:'#c62828',catBg:'#fce4ec',cat:'Musique',title:'Concert Jazz · Place Mairie',meta:'20h30 · Gratuit',count:142},
+  {day:'11',month:'Mars',emoji:'⚽',color:'#e8f5e9',catColor:'#1b5e20',catBg:'#c8e6c9',cat:'Sport',title:'Tournoi Foot 5v5 · Stade Murat',meta:'10h00 · 5€/équipe',count:34},
+  {day:'13',month:'Mars',emoji:'💼',color:'#e3f2fd',catColor:'#0d47a1',catBg:'#bbdefb',cat:'Entrepreneurs',title:'Meetup Startup Laval',meta:'19h00 · Espace Coworking',count:58},
+  {day:'15',month:'Mars',emoji:'🎨',color:'#f3e5f5',catColor:'#4a148c',catBg:'#e1bee7',cat:'Culture',title:'Expo Photo Urbaine',meta:'Toute la journée · Médiathèque',count:29},
+];
+const DEFAULT_MARKET=[
+  {emoji:'🚲',color:'#e8f5e9',title:'VTT Scott 2021',price:'80 €',loc:'Laval-Nord'},
+  {emoji:'📺',color:'#e3f2fd',title:'TV Samsung 55"',price:'220 €',loc:'Centre-ville'},
+  {emoji:'🛋️',color:'#fff3e0',title:'Canapé cuir 3 places',price:'150 €',loc:'Saint-Nicolas'},
+  {emoji:'🏠',color:'#f3e5f5',title:'Studio meublé 25m²',price:'450€/m',loc:'Quartier Gare'},
+  {emoji:'🎸',color:'#fce4ec',title:'Guitare acoustique',price:'95 €',loc:'Centre-ville'},
+  {emoji:'📚',color:'#e8f4ff',title:'Lot livres BD',price:'20 €',loc:'Laval-Nord'},
+];
+const MAP_PINS=[
+  {left:'38%',top:'40%',emoji:'🎸',label:'Concert Jazz'},
+  {left:'62%',top:'26%',emoji:'🏪',label:'Promo -20%'},
+  {left:'25%',top:'58%',emoji:'🆘',label:'Aide canapé'},
+  {left:'70%',top:'63%',emoji:'🚲',label:'VTT 80€'},
+  {left:'50%',top:'75%',emoji:'⚽',label:'Tournoi foot'},
+  {left:'80%',top:'43%',emoji:'☕',label:'Café du Coin'},
+];
+const BADGES=[{ico:'🏆',bg:'#fff3e0',name:'Top contrib.'},{ico:'🎉',bg:'#fce4ec',name:'Organisateur'},{ico:'🤝',bg:'#e8fce8',name:'Entraideur'},{ico:'🛍️',bg:'#e3f2fd',name:'Vendeur pro'},{ico:'⚽',bg:'#f3e5f5',name:'Sportif'}];
+const TYPE_OPTS=[{key:'social',label:'💬 Social',badgeCls:'b-social'},{key:'event',label:'🎉 Événement',badgeCls:'b-event'},{key:'market',label:'🛍️ Vente',badgeCls:'b-market'},{key:'help',label:'🆘 Entraide',badgeCls:'b-help'},{key:'info',label:'ℹ️ Info',badgeCls:'b-info'}];
+const CREATE_EMOJIS=['🚲','📱','🛋️','🎾','🎸','🏠','📚','🍕','🐶','⚽','🎨','💼','🔧','🌿','🎮'];
+const PROFILE_EMOJIS=['😎','😊','🤩','🧑','👩','👨','🦊','🐱','🐻','🦁','🚀','🌟','💪','🎯','🦋'];
+const AV_BG=['linear-gradient(135deg,#ff4757,#ff6348)','linear-gradient(135deg,#1e90ff,#00c6ff)','linear-gradient(135deg,#2ed573,#1dd1a1)','linear-gradient(135deg,#a55eea,#d980fa)','linear-gradient(135deg,#ffa502,#ff6348)','linear-gradient(135deg,#1a1612,#3d3028)'];
+const TYPE_COLORS={social:'#fce4ec',event:'#e8f4ff',market:'#e8fce8',help:'#fff3e0',info:'#f3e5f5'};
+const TYPE_BADGE={social:'💬 Social',event:'🎉 Événement',market:'🛍️ Vente',help:'🆘 Entraide',info:'ℹ️ Info'};
+const TYPE_BADGE_CLS={social:'b-social',event:'b-event',market:'b-market',help:'b-help',info:'b-info'};
+let createState={type:'social',emoji:'📌'};
+let editAvEmoji=STATE.profile.av,editAvBgIdx=0,isDark=false,toastTimer=null;
+
+/* ═══ UTILS ═══ */
+function toast(ico,title,txt){
+  const t=document.getElementById('toast');
+  document.getElementById('t-ico').textContent=ico;
+  document.getElementById('t-title').textContent=title;
+  document.getElementById('t-txt').textContent=txt;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  const sb=document.getElementById('sb-'+v);if(sb)sb.classList.add('active');
+  if(v==='profile')renderProfile();
+}
+function activateMf(el,label){
+  document.querySelectorAll('.mf').forEach(m=>m.classList.remove('active'));
+  el.classList.add('active');
+  toast('🗺️','Carte',label);
+}
+
+/* ═══ RENDER ═══ */
+function renderFeedPosts(){
+  const el=document.getElementById('feed-posts');el.innerHTML='';
+  const all=[...STATE.annonces.slice().reverse(),...DEFAULT_POSTS];
+  all.forEach(p=>{
+    const card=document.createElement('div');card.className='post-card';
+    const ismine=p.mine||STATE.annonces.find(a=>a.id===p.id);
+    card.innerHTML=`<div class="post-header"><div class="post-av" style="background:${p.avBg||'#f0ece4'}">${p.av||'😊'}</div><div style="flex:1;"><div class="post-name">${p.name}</div><div class="post-time">Il y a ${p.time}</div></div><div class="post-badge ${p.badgeCls}">${p.badge}</div></div><div class="post-text">${p.text}</div><div class="post-actions"><span class="p-action" onclick="toast('❤️','Liked','Tu as aimé ce post !')">❤️ ${p.likes}</span><span class="p-action" onclick="toast('💬','Commentaire','Ouvre la discussion !')">💬 ${p.comments}</span><span class="p-action">↗️ Partager</span>${ismine?`<span class="p-action" style="margin-left:auto;color:var(--red);" onclick="deleteAnnonce('${p.id}')">🗑️ Supprimer</span>`:''}</div>`;
+    el.appendChild(card);
+  });
+}
+function renderEvents(){
+  // events grid
+  const eg=document.getElementById('events-grid');if(eg){eg.innerHTML='';
+    const userEv=STATE.annonces.filter(a=>a.type==='event');
+    [...userEv.slice().reverse(),...DEFAULT_EVENTS].forEach(e=>{
+      eg.innerHTML+=`<div class="ev-card" onclick="toast('🎉','${e.title}','${e.meta||e.loc||'Laval'}')"><div class="ev-emoji-header" style="background:${e.color||'#f0f4ff'}">${e.emoji||'📅'}</div><div class="ev-body"><div class="ev-cat" style="background:${e.catBg||'#e8f4ff'};color:${e.catColor||'#0d47a1'}">${e.cat||'Événement'}</div><div class="ev-title">${e.title}</div><div class="ev-meta">📅 ${e.day||'Bientôt'} ${e.month||''} · ${e.meta||e.loc||''}</div><div class="ev-footer"><span style="font-size:11px;color:var(--sub);">${e.count||0} participants</span><button class="ev-join" onclick="event.stopPropagation();toast('🎉','Inscrit !','Tu participes à ${(e.title||'').replace(/'/g,"\\'")} !')">Je participe →</button></div></div></div>`;
+    });
+  }
+  // aside mini events
+  const ae=document.getElementById('aside-events');if(ae){ae.innerHTML='';
+    DEFAULT_EVENTS.slice(0,3).forEach(e=>{
+      ae.innerHTML+=`<div class="event-mini"><div class="event-mini-date" style="background:${e.color}"><div class="event-mini-d">${e.day}</div><div class="event-mini-m">${e.month}</div></div><div><div class="event-mini-title">${e.title}</div><div class="event-mini-meta">${e.meta}</div></div></div>`;
+    });
+  }
+}
+function renderMarket(){
+  const el=document.getElementById('market-grid');if(!el)return;el.innerHTML='';
+  const userMkt=STATE.annonces.filter(a=>a.type==='market');
+  [...userMkt.slice().reverse(),...DEFAULT_MARKET].forEach(m=>{
+    const card=document.createElement('div');card.className='mkt-card';
+    card.innerHTML=`<div class="mkt-img" style="background:${m.color||'#f0ece4'}">${m.emoji}</div><div class="mkt-body"><div class="mkt-title">${m.title}</div><div class="mkt-price">${m.price||'—'}</div><div class="mkt-loc">📍 ${m.loc||'Laval'}</div></div>`;
+    card.addEventListener('click',()=>toast('🛍️',m.title,(m.price||'') + ' · ' + (m.loc||'Laval')));
+    el.appendChild(card);
+  });
+}
+function renderMapPins(){
+  const el=document.getElementById('map-pins');if(!el)return;el.innerHTML='';
+  const all=[...MAP_PINS,...STATE.annonces.map(a=>({left:(20+Math.random()*60)+'%',top:(20+Math.random()*55)+'%',emoji:a.emoji||'📌',label:a.title.slice(0,14)}))];
+  all.forEach(p=>{
+    const pin=document.createElement('div');pin.className='map-pin';
+    pin.style.cssText=`left:${p.left};top:${p.top};`;
+    pin.innerHTML=`<div class="map-pin-bubble"><span>${p.emoji}</span>${p.label}</div><div class="map-pin-tail"></div>`;
+    pin.addEventListener('click',()=>toast(p.emoji,p.label,'Voir sur la carte'));
+    el.appendChild(pin);
+  });
+}
+function renderProfile(){
+  const p=STATE.profile;
+  document.getElementById('p-av').textContent=p.av;
+  document.getElementById('p-av').style.background=p.avBg;
+  document.getElementById('p-name').textContent=p.name;
+  document.getElementById('p-handle').textContent='@'+p.handle;
+  document.getElementById('p-level').textContent=p.level;
+  document.getElementById('p-xp').textContent=p.xp.toLocaleString('fr');
+  document.getElementById('xp-fill').style.width=p.xpPct+'%';
+  document.getElementById('ps-vibes').textContent=p.vibes.toLocaleString('fr');
+  document.getElementById('ps-amis').textContent=p.amis.toLocaleString('fr');
+  document.getElementById('ps-events').textContent=p.events;
+  document.getElementById('ps-posts').textContent=STATE.annonces.length;
+  document.getElementById('tn-avatar').textContent=p.av;
+  document.getElementById('tn-avatar').style.background=p.avBg;
+  document.getElementById('composer-av').textContent=p.av;
+  document.getElementById('composer-av').style.background=p.avBg;
+  const br=document.getElementById('badges-row');br.innerHTML='';
+  BADGES.forEach(b=>{br.innerHTML+=`<div class="badge-item"><div class="badge-ico" style="background:${b.bg}">${b.ico}</div><div class="badge-lbl">${b.name}</div></div>`;});
+  const ma=document.getElementById('my-annonces');ma.innerHTML='';
+  if(STATE.annonces.length===0){
+    ma.innerHTML=`<div style="text-align:center;padding:24px;font-size:13px;color:var(--sub);">Tu n'as pas encore publié d'annonce.<br><span style="color:var(--red);font-weight:700;cursor:pointer;" onclick="openCreateModal()">Créer ma première annonce →</span></div>`;
+  } else {
+    STATE.annonces.slice().reverse().forEach(a=>{
+      ma.innerHTML+=`<div class="my-post-card"><div class="my-post-ico" style="background:${a.color||'#f0ece4'}">${a.emoji||'📌'}</div><div class="my-post-info"><div class="my-post-title">${a.title}</div><div class="my-post-meta">${a.badge} · ${a.loc||'Laval'}</div></div><div class="my-post-del" onclick="deleteAnnonce('${a.id}')">🗑️</div></div>`;
+    });
+  }
+  document.getElementById('stat-posts').textContent=DEFAULT_POSTS.length+STATE.annonces.length;
+}
+
+/* ═══ MODAL CREATE ═══ */
+function openCreateModal(preType){
+  createState={type:preType||'social',emoji:'📌'};
+  buildTypeChips();buildCreateEmojis();
+  document.getElementById('create-title').value='';
+  document.getElementById('create-desc').value='';
+  document.getElementById('create-price').value='';
+  updatePriceField();
+  document.getElementById('modal-create').classList.add('open');
+}
+function closeModalCreate(e){if(!e||e.target===document.getElementById('modal-create'))document.getElementById('modal-create').classList.remove('open');}
+function buildTypeChips(){
+  const el=document.getElementById('create-types');el.innerHTML='';
+  TYPE_OPTS.forEach(t=>{
+    const d=document.createElement('div');d.className='type-chip'+(t.key===createState.type?' sel':'');
+    d.textContent=t.label;
+    d.addEventListener('click',()=>{createState.type=t.key;buildTypeChips();updatePriceField();});
+    el.appendChild(d);
+  });
+}
+function buildCreateEmojis(){
+  const el=document.getElementById('create-emojis');el.innerHTML='';
+  CREATE_EMOJIS.forEach(em=>{
+    const d=document.createElement('div');d.className='emoji-opt'+(em===createState.emoji?' sel':'');
+    d.textContent=em;d.addEventListener('click',()=>{createState.emoji=em;buildCreateEmojis();});
+    el.appendChild(d);
+  });
+}
+function updatePriceField(){document.getElementById('create-price-field').style.display=createState.type==='market'?'block':'none';}
+function saveAnnonce(){
+  const title=document.getElementById('create-title').value.trim();
+  const desc=document.getElementById('create-desc').value.trim();
+  if(!title||!desc){toast('⚠️','Champs manquants','Remplis le titre et la description.');return;}
+  const price=document.getElementById('create-price').value;
+  const loc=document.getElementById('create-loc').value;
+  const p=STATE.profile;
+  STATE.annonces.push({
+    id:'u'+Date.now(),av:p.av,avBg:p.avBg,name:p.name,time:'quelques secondes',
+    type:createState.type,badge:TYPE_BADGE[createState.type],badgeCls:TYPE_BADGE_CLS[createState.type]+' b-mine',
+    text:`<strong>${title}</strong> — ${desc}${price?` · <strong>${price} €</strong>`:''}`,
+    likes:0,comments:0,mine:true,emoji:createState.emoji,color:TYPE_COLORS[createState.type],
+    title,price:price?price+' €':null,loc,fav:'🤍',cat:'Événement',catBg:'#e8f4ff',catColor:'#0d47a1',meta:loc,
+  });
+  STATE.profile.xp+=50;STATE.profile.vibes+=10;
+  document.getElementById('modal-create').classList.remove('open');
+  renderFeedPosts();renderMarket();renderEvents();renderMapPins();renderProfile();
+  toast('🚀','Annonce publiée !',`"${title}" est maintenant visible à ${p.city} · +50 XP`);
+  switchView('feed');
+}
+function deleteAnnonce(id){
+  STATE.annonces=STATE.annonces.filter(a=>a.id!==id);
+  renderFeedPosts();renderMarket();renderEvents();renderMapPins();renderProfile();
+  toast('🗑️','Annonce supprimée','Retirée du fil et du market.');
+}
+
+/* ═══ MODAL EDIT PROFILE ═══ */
+function openEditProfileModal(){
+  const p=STATE.profile;editAvEmoji=p.av;
+  document.getElementById('edit-name').value=p.name;
+  document.getElementById('edit-handle').value=p.handle;
+  document.getElementById('edit-city').value=p.city;
+  document.getElementById('edit-since').value=p.since;
+  document.getElementById('edit-bio').value=p.bio;
+  editAvBgIdx=Math.max(0,AV_BG.indexOf(p.avBg));
+  buildProfileEmojis();
+  document.getElementById('modal-profile').classList.add('open');
+}
+function closeModalProfile(e){if(!e||e.target===document.getElementById('modal-profile'))document.getElementById('modal-profile').classList.remove('open');}
+function buildProfileEmojis(){
+  const el=document.getElementById('profile-emojis');el.innerHTML='';
+  PROFILE_EMOJIS.forEach(em=>{
+    const d=document.createElement('div');d.className='emoji-opt'+(em===editAvEmoji?' sel':'');
+    d.textContent=em;d.addEventListener('click',()=>{editAvEmoji=em;buildProfileEmojis();});
+    el.appendChild(d);
+  });
+  AV_BG.forEach((bg,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText=`width:36px;height:36px;border-radius:12px;background:${bg};cursor:pointer;border:3px solid ${i===editAvBgIdx?'var(--text)':'transparent'};transition:transform .15s;flex-shrink:0;`;
+    d.addEventListener('click',()=>{editAvBgIdx=i;buildProfileEmojis();});
+    el.appendChild(d);
+  });
+}
+function saveProfile(){
+  const name=document.getElementById('edit-name').value.trim();
+  if(!name){toast('⚠️','Champ manquant','Le nom est obligatoire.');return;}
+  STATE.profile.name=name;
+  STATE.profile.handle=document.getElementById('edit-handle').value.trim()||STATE.profile.handle;
+  STATE.profile.city=document.getElementById('edit-city').value.trim()||STATE.profile.city;
+  STATE.profile.since=document.getElementById('edit-since').value.trim()||STATE.profile.since;
+  STATE.profile.bio=document.getElementById('edit-bio').value.trim()||STATE.profile.bio;
+  STATE.profile.av=editAvEmoji;STATE.profile.avBg=AV_BG[editAvBgIdx];STATE.profile.xp+=20;
+  STATE.annonces.forEach(a=>{a.name=name;a.av=editAvEmoji;a.avBg=AV_BG[editAvBgIdx];});
+  document.getElementById('modal-profile').classList.remove('open');
+  renderProfile();renderFeedPosts();
+  toast('✅','Profil mis à jour',`Bonjour ${name} ! +20 XP`);
+}
+
+/* ═══ DARK MODE ═══ */
+function toggleTheme(){
+  isDark=!isDark;
+  document.body.classList.toggle('dark',isDark);
+  document.getElementById('tt-track').classList.toggle('on',isDark);
+  document.getElementById('theme-lbl').textContent=isDark?'Mode clair':'Mode sombre';
+  toast(isDark?'🌙':'☀️',isDark?'Mode sombre activé':'Mode clair activé','');
+}
+
+/* ═══ INIT ═══ */
+function init(){
+  renderFeedPosts();renderEvents();renderMarket();renderMapPins();renderProfile();
+  const s=JSON.parse(localStorage.getItem('bncity_session')||'null');
+  if(s&&s.app==='mycity'){
+    STATE.profile.name=s.name||STATE.profile.name;
+    STATE.profile.av=s.avatar||STATE.profile.av;
+    renderProfile();
+  }
+  setTimeout(()=>toast('🏙️','Bienvenue sur MYCITY','Laval — 1 240 habitants connectés !'),800);
+}
+init();
+</script>
+</body>
+</html>

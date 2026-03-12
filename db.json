@@ -1,0 +1,214 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "city": "Laval",
+    "region": "Pays de la Loire",
+    "created": "2026-03-11"
+  },
+  "users": [
+    {
+      "id": "u001",
+      "type": "particulier",
+      "email": "alex@mycity.fr",
+      "password": "demo123",
+      "name": "Alexandre Morin",
+      "handle": "@alexmorin",
+      "avatar": "😎",
+      "avatarBg": "linear-gradient(135deg,#ff4757,#ff6348)",
+      "city": "Laval",
+      "since": "2024",
+      "bio": "Passionné de tech, amateur de bons restos et concerts jazz 🎷",
+      "level": 12,
+      "xp": 2840,
+      "xpPct": 68,
+      "vibes": 312,
+      "amis": 47,
+      "events": 9,
+      "app": "mycity"
+    },
+    {
+      "id": "u002",
+      "type": "particulier",
+      "email": "sofia@mycity.fr",
+      "password": "demo123",
+      "name": "Sofía Martínez",
+      "handle": "@sofiamart",
+      "avatar": "🌸",
+      "avatarBg": "linear-gradient(135deg,#a55eea,#1e90ff)",
+      "city": "Laval",
+      "since": "2025",
+      "bio": "Entrepreneuse, co-fondatrice @LeMarchéLocal. Adore les marchés artisanaux 🌿",
+      "level": 8,
+      "xp": 1560,
+      "xpPct": 42,
+      "vibes": 198,
+      "amis": 83,
+      "events": 14,
+      "app": "mycity"
+    },
+    {
+      "id": "b001",
+      "type": "entreprise",
+      "email": "contact@technovision.fr",
+      "password": "demo123",
+      "companyName": "TECHNOVISION SAS",
+      "sector": "Ingénierie · Conseil IT",
+      "logo": "🏭",
+      "city": "Laval",
+      "since": "2018",
+      "description": "Cabinet de conseil et d'ingénierie IT, spécialisé en transformation digitale des ETI régionales.",
+      "employees": "47",
+      "siret": "82345678900012",
+      "contracts": 47,
+      "partners": 23,
+      "rating": 4.9,
+      "bizScore": 85,
+      "app": "biznode"
+    },
+    {
+      "id": "b002",
+      "type": "entreprise",
+      "email": "direction@lavalnum.fr",
+      "password": "demo123",
+      "companyName": "LAVAL NUMÉRIQUE",
+      "sector": "Innovation · Tech",
+      "logo": "💡",
+      "city": "Laval",
+      "since": "2020",
+      "description": "Agence de développement économique numérique. Accélérateur de partenariats tech locaux.",
+      "employees": "45",
+      "siret": "91234567800023",
+      "contracts": 31,
+      "partners": 18,
+      "rating": 5.0,
+      "bizScore": 92,
+      "app": "biznode"
+    }
+  ],
+  "posts": [
+    {
+      "id": "p001",
+      "authorId": "u002",
+      "type": "social",
+      "emoji": "🎭",
+      "title": "Festival Jazz à la Mairie — qui vient ?",
+      "content": "Super ambiance prévue vendredi soir place de la Mairie. Des places gratuites disponibles sur l'appli ville !",
+      "quartier": "Centre-ville",
+      "date": "2026-03-11T18:30:00",
+      "likes": 24,
+      "comments": 7
+    },
+    {
+      "id": "p002",
+      "authorId": "u001",
+      "type": "vente",
+      "emoji": "🚲",
+      "title": "VTT Trek en très bon état — 80€",
+      "content": "VTT Trek Marlin 5, taille M, révisé il y a 2 mois. Idéal pour les sentiers autour de Laval.",
+      "price": "80",
+      "quartier": "Laval-Nord",
+      "date": "2026-03-10T10:00:00",
+      "likes": 5,
+      "comments": 3
+    },
+    {
+      "id": "p003",
+      "authorId": "u002",
+      "type": "entraide",
+      "emoji": "🤝",
+      "title": "Cherche covoiturage Laval → Rennes",
+      "content": "Besoin d'un covoiturage vendredi matin pour Rennes (gare). Participe aux frais bien sûr !",
+      "quartier": "Centre-ville",
+      "date": "2026-03-09T09:00:00",
+      "likes": 3,
+      "comments": 2
+    },
+    {
+      "id": "p004",
+      "authorId": "u001",
+      "type": "info",
+      "emoji": "ℹ️",
+      "title": "Travaux rue de la Paix jusqu'au 15 mars",
+      "content": "Pensez à éviter la rue de la Paix cette semaine, déviation par le boulevard de l'Industrie.",
+      "quartier": "Centre-ville",
+      "date": "2026-03-08T08:00:00",
+      "likes": 41,
+      "comments": 9
+    }
+  ],
+  "events": [
+    {
+      "id": "e001",
+      "authorId": "u002",
+      "type": "event",
+      "emoji": "🎸",
+      "title": "Soirée Jazz · Place de la Mairie",
+      "description": "Concert en plein air, entrée gratuite. Buvette sur place.",
+      "day": "14",
+      "month": "MAR",
+      "time": "20h30",
+      "location": "Place de la Mairie",
+      "price": "Gratuit",
+      "attendees": 142,
+      "category": "Culture"
+    },
+    {
+      "id": "e002",
+      "authorId": "u001",
+      "type": "event",
+      "emoji": "🎾",
+      "title": "Tournoi tennis amateur",
+      "description": "Tous niveaux bienvenus. Inscription sur place.",
+      "day": "16",
+      "month": "MAR",
+      "time": "10h00",
+      "location": "Courts Laval-Sud",
+      "price": "5€",
+      "attendees": 28,
+      "category": "Sport"
+    },
+    {
+      "id": "e003",
+      "authorId": "u002",
+      "type": "event",
+      "emoji": "🌿",
+      "title": "Marché artisanal du printemps",
+      "description": "Producteurs locaux, artisans, bons plans. Venez nombreux !",
+      "day": "22",
+      "month": "MAR",
+      "time": "9h00",
+      "location": "Esplanade du Vieux Laval",
+      "price": "Gratuit",
+      "attendees": 87,
+      "category": "Local"
+    }
+  ],
+  "marketItems": [
+    { "id": "m001", "authorId": "u001", "emoji": "🚲", "title": "VTT Trek Marlin 5", "price": "80", "location": "Laval-Nord", "category": "Sport" },
+    { "id": "m002", "authorId": "u002", "emoji": "📚", "title": "Lot livres cuisine", "price": "12", "location": "Centre-ville", "category": "Livres" },
+    { "id": "m003", "authorId": "u001", "emoji": "🛋️", "title": "Canapé convertible", "price": "150", "location": "Laval-Est", "category": "Maison" },
+    { "id": "m004", "authorId": "u002", "emoji": "🎸", "title": "Guitare acoustique", "price": "95", "location": "Centre-ville", "category": "Musique" }
+  ],
+  "companies": [
+    { "id": "c001", "name": "LACTEL GROUP", "sector": "Agroalimentaire", "logo": "🥛", "employees": "2400", "rating": 4.8, "contracts": 124, "description": "Leader laitier régional. Partenaire idéal pour la supply chain locale.", "tag": "Partenaire potentiel" },
+    { "id": "c002", "name": "BOUYGUES BÂTIMENT", "sector": "BTP / Construction", "logo": "🏗️", "employees": "650", "rating": 4.7, "contracts": 87, "description": "Filiale régionale BTP, grands chantiers de réhabilitation et construction neuve.", "tag": "Prospect chaud" },
+    { "id": "c003", "name": "LAVAL NUMÉRIQUE", "sector": "Innovation / Tech", "logo": "💡", "employees": "45", "rating": 5.0, "contracts": 31, "description": "Agence de développement économique numérique. Accélérateur de partenariats tech.", "tag": "Recommandé IA" },
+    { "id": "c004", "name": "SEPUR ENVIRONNEMENT", "sector": "Environnement / RSE", "logo": "♻️", "employees": "320", "rating": 4.6, "contracts": 56, "description": "Gestion des déchets industriels et solutions RSE. Certifié ISO 14001.", "tag": "Nouveau" }
+  ],
+  "tenders": [
+    { "id": "t001", "authorId": "b002", "type": "Prestation", "category": "Informatique", "title": "Refonte plateforme e-commerce B2B", "budget": "40 000 – 60 000 €", "deadline": "12 jours", "replies": 6 },
+    { "id": "t002", "authorId": "b002", "type": "Partenariat", "category": "Logistique", "title": "Distribution régionale Pays de Loire", "budget": "Long terme", "deadline": "8 jours", "replies": 3 },
+    { "id": "t003", "authorId": "b001", "type": "Prestation", "category": "Conseil", "title": "Audit cybersécurité infrastructure SI", "budget": "15 000 – 25 000 €", "deadline": "5 jours", "replies": 9 },
+    { "id": "t004", "authorId": "b002", "type": "Fourniture", "category": "BTP", "title": "Fourniture matériaux isolants — Chantier R+6", "budget": "80 000 €", "deadline": "21 jours", "replies": 2 }
+  ],
+  "deals": [
+    { "id": "d001", "authorId": "b001", "partnerId": "c001", "title": "Développement ERP interne", "company": "LACTEL GROUP", "amount": "84 000", "period": "12 mois", "progress": 67, "status": "En cours", "tags": ["IT", "Signé"] },
+    { "id": "d002", "authorId": "b001", "partnerId": "c002", "title": "Maintenance réseau & infra", "company": "BOUYGUES BÂTIMENT", "amount": "2 400", "period": "/mois", "progress": 100, "status": "Actif", "tags": ["Infra", "Récurrent"] },
+    { "id": "d003", "authorId": "b001", "partnerId": "c003", "title": "Consulting transformation digitale", "company": "LAVAL NUMÉRIQUE", "amount": "18 500", "period": "6 mois", "progress": 30, "status": "En cours", "tags": ["Conseil", "Phase 1"] },
+    { "id": "d004", "authorId": "b001", "partnerId": "c004", "title": "Audit RGPD complet", "company": "SEPUR ENVIRONNEMENT", "amount": "6 200", "period": "3 mois", "progress": 85, "status": "Finalisation", "tags": ["Juridique", "RGPD"] }
+  ],
+  "stats": {
+    "mycity": { "members": 1240, "posts": 47, "events": 38 },
+    "biznode": { "companies": 342, "tenders": 28, "deals": 1240, "volume": "4.2M" }
+  }
+}

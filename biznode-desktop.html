@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIZNODE — Place de marché B2B locale</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0c0f;--surface:#131519;--card:#181c22;--card2:#1e222a;
+  --border:#252b35;--border2:#2e3440;
+  --text:#e8ecf4;--sub:#5a6375;--muted:#3a4050;
+  --gold:#c9a84c;--gold2:#e8c96a;
+  --gold-dim:rgba(201,168,76,.1);--gold-glow:rgba(201,168,76,.2);
+  --green:#3de0a0;--red:#e05555;--blue:#4a9eff;--purple:#9b6eff;--amber:#e8a030;
+  --nav-h:60px;--sidebar-w:240px;
+}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;display:flex;flex-direction:column;transition:background .35s;}
+
+/* ─── TOPNAV ─── */
+.topnav{height:var(--nav-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:fixed;top:0;left:0;right:0;z-index:300;}
+.tn-brand{font-family:'Cormorant Garant',serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.02em;flex-shrink:0;}
+.tn-brand span{color:var(--gold);}
+.tn-search{flex:1;max-width:380px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 14px;display:flex;align-items:center;gap:8px;transition:border-color .2s;}
+.tn-search:focus-within{border-color:rgba(201,168,76,.3);}
+.tn-search input{flex:1;background:transparent;border:none;outline:none;font-size:13px;font-family:'Outfit',sans-serif;color:var(--text);}
+.tn-search input::placeholder{color:var(--sub);}
+.tn-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.tn-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--card);color:var(--text);transition:all .15s;}
+.tn-btn:hover{border-color:rgba(201,168,76,.25);}
+.tn-btn.primary{background:linear-gradient(135deg,#b8942a,#d4aa40);border-color:transparent;color:#0b0c0f;}
+.tn-btn.primary:hover{opacity:.9;}
+.tn-switch{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.2);cursor:pointer;font-size:11px;font-weight:700;color:#ff4757;transition:all .2s;}
+.tn-switch:hover{background:rgba(255,71,87,.14);}
+.tn-avatar{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;background:linear-gradient(135deg,#1a1608,#2d2010);border:1.5px solid rgba(201,168,76,.2);}
+.notif-btn{position:relative;width:34px;height:34px;border-radius:10px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;}
+.notif-btn:hover{border-color:rgba(201,168,76,.25);}
+.notif-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--gold);border-radius:50%;border:1.5px solid var(--surface);}
+
+/* ─── LAYOUT ─── */
+.layout{display:flex;margin-top:var(--nav-h);height:calc(100vh - var(--nav-h));}
+
+/* ─── SIDEBAR ─── */
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 12px;gap:4px;flex-shrink:0;overflow-y:auto;}
+.sidebar::-webkit-scrollbar{display:none;}
+.sb-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);padding:8px 10px 4px;margin-top:6px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--sub);transition:all .15s;}
+.sb-item:hover{background:var(--gold-dim);color:var(--text);}
+.sb-item.active{background:var(--gold-dim);color:var(--gold);}
+.sb-item-ico{font-size:15px;width:18px;text-align:center;flex-shrink:0;}
+.sb-item-badge{margin-left:auto;background:var(--gold-dim);color:var(--gold);font-family:'DM Mono',monospace;font-size:8px;font-weight:500;padding:2px 7px;border-radius:6px;border:1px solid rgba(201,168,76,.2);}
+.sb-divider{height:1px;background:var(--border);margin:8px 10px;}
+.sb-gold-card{background:linear-gradient(135deg,#1a1608,#211a09);border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:12px;margin-top:auto;}
+.sg-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:rgba(201,168,76,.35);margin-bottom:9px;}
+.sg-stat{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.sg-stat:last-child{margin-bottom:0;}
+.sg-lbl{font-family:'DM Mono',monospace;font-size:9px;color:rgba(201,168,76,.4);}
+.sg-val{font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);font-weight:500;}
+.theme-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;cursor:pointer;margin-top:4px;border:1px solid var(--border);background:var(--card);transition:all .2s;}
+.theme-row:hover{border-color:rgba(201,168,76,.2);}
+.tt-track{width:32px;height:18px;border-radius:9px;background:var(--border2);position:relative;transition:background .3s;flex-shrink:0;}
+.tt-track.on{background:var(--gold);}
+.tt-knob{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#e8ecf4;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+.tt-track.on .tt-knob{transform:translateX(14px);}
+.theme-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);}
+
+/* ─── MAIN ─── */
+.main{flex:1;overflow-y:auto;position:relative;}
+.main::-webkit-scrollbar{width:5px;}
+.main::-webkit-scrollbar-track{background:transparent;}
+.main::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ─── VIEWS ─── */
+.view{display:none;min-height:100%;animation:vIn .3s cubic-bezier(.16,1,.3,1);}
+.view.active{display:block;}
+@keyframes vIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.view-header{padding:28px 32px 16px;border-bottom:1px solid var(--border);}
+.vh-title{font-family:'Cormorant Garant',serif;font-size:30px;font-weight:700;color:var(--text);line-height:1.1;}
+.vh-title em{color:var(--gold);font-style:italic;}
+.vh-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);margin-top:5px;letter-spacing:.04em;}
+.view-body{padding:24px 32px;}
+
+/* ─── KPI GRID ─── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden;cursor:pointer;transition:all .15s;}
+.kpi-card:hover{border-color:rgba(201,168,76,.2);}
+.kpi-card::before{content:'';position:absolute;top:0;right:0;width:50px;height:50px;border-radius:0 16px 0 50px;background:var(--gold-dim);}
+.kpi-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin-bottom:8px;}
+.kpi-val{font-family:'Cormorant Garant',serif;font-size:32px;font-weight:700;color:var(--text);line-height:1;}
+.kpi-delta{font-family:'DM Mono',monospace;font-size:10px;margin-top:5px;}
+.kpi-delta.up{color:var(--green);} .kpi-delta.down{color:var(--red);}
+
+/* ─── SECTION HEADING ─── */
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);}
+.section-link{font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);cursor:pointer;letter-spacing:.04em;}
+
+/* ─── HUB LAYOUT ─── */
+.hub-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;}
+@media(max-width:1100px){.hub-layout{grid-template-columns:1fr;}.hub-aside{display:none;}}
+
+/* ─── ACTIVITY FEED ─── */
+.activity-feed{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.act-item{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.act-item:last-child{border-bottom:none;}
+.act-item:hover{background:var(--gold-dim);}
+.act-icon{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.act-icon.deal{background:rgba(61,224,160,.1);} .act-icon.tender{background:rgba(74,158,255,.1);}
+.act-icon.partner{background:var(--gold-dim);} .act-icon.alert{background:rgba(224,85,85,.1);}
+.act-body{flex:1;}
+.act-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.act-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);}
+.act-badge{font-family:'DM Mono',monospace;font-size:8px;padding:3px 10px;border-radius:7px;text-transform:uppercase;letter-spacing:.06em;margin-left:auto;flex-shrink:0;align-self:flex-start;margin-top:3px;}
+.ab-green{background:rgba(61,224,160,.1);color:var(--green);}
+.ab-gold{background:var(--gold-dim);color:var(--gold);}
+.ab-blue{background:rgba(74,158,255,.1);color:var(--blue);}
+.ab-red{background:rgba(224,85,85,.1);color:var(--red);}
+.ab-purple{background:rgba(155,110,255,.1);color:var(--purple);}
+
+/* ─── ASIDE WIDGET ─── */
+.hub-aside-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:16px;}
+.hac-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin-bottom:14px;}
+.trust-bar-wrap{}
+.trust-val{font-family:'Cormorant Garant',serif;font-size:36px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:6px;}
+.trust-bar-track{height:6px;background:var(--border2);border-radius:3px;overflow:hidden;margin-bottom:8px;}
+.trust-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width 1.2s cubic-bezier(.16,1,.3,1);}
+.trust-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.trust-tag{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:6px;}
+
+/* ─── CO CARDS ─── */
+.co-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.co-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;cursor:pointer;transition:all .15s;}
+.co-card:hover{border-color:rgba(201,168,76,.2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.15);}
+.co-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.co-logo{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--border2);}
+.co-name{font-size:15px;font-weight:700;color:var(--text);}
+.co-sector{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);margin-top:2px;letter-spacing:.04em;}
+.co-tag{margin-left:auto;font-family:'DM Mono',monospace;font-size:8px;padding:3px 10px;border-radius:7px;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;}
+.co-desc{font-size:12px;color:var(--sub);line-height:1.6;margin-bottom:12px;}
+.co-footer{display:flex;align-items:center;gap:12px;}
+.co-stat{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);}
+.co-stat span{color:var(--text);}
+.co-btn{margin-left:auto;background:var(--gold-dim);border:1px solid rgba(201,168,76,.2);border-radius:9px;padding:6px 14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);cursor:pointer;letter-spacing:.04em;transition:all .15s;}
+.co-btn:hover{background:rgba(201,168,76,.18);}
+
+/* ─── TENDER CARDS ─── */
+.tender-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
+.tender-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .15s;}
+.tender-card:hover{border-color:rgba(74,158,255,.2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.15);}
+.tender-bar{height:3px;background:linear-gradient(90deg,var(--blue),var(--purple));}
+.tender-inner{padding:18px;}
+.tender-cat{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:7px;}
+.tender-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3;}
+.tender-co{font-size:11px;color:var(--sub);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.tender-details{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.tender-detail{background:var(--card2);border-radius:9px;padding:6px 12px;}
+.td-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;}
+.td-val{font-size:12px;font-weight:700;color:var(--text);margin-top:2px;}
+.tender-footer{display:flex;align-items:center;justify-content:space-between;}
+.tender-deadline{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);}
+.tender-deadline span{color:var(--amber);}
+.tender-btn{background:linear-gradient(135deg,rgba(74,158,255,.1),rgba(155,110,255,.1));border:1px solid rgba(74,158,255,.2);border-radius:10px;padding:7px 16px;font-family:'DM Mono',monospace;font-size:10px;color:var(--blue);cursor:pointer;letter-spacing:.04em;transition:all .15s;}
+.tender-btn:hover{background:rgba(74,158,255,.18);}
+
+/* ─── DEAL CARDS ─── */
+.deals-list{display:flex;flex-direction:column;gap:14px;}
+.deal-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;cursor:pointer;transition:all .15s;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;}
+.deal-card:hover{border-color:rgba(61,224,160,.15);}
+.deal-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.deal-co{font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);}
+.deal-right{text-align:right;}
+.deal-amount{font-family:'Cormorant Garant',serif;font-size:26px;font-weight:700;color:var(--green);}
+.deal-period{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);}
+.deal-progress{margin-top:12px;}
+.dp-header{display:flex;justify-content:space-between;margin-bottom:5px;}
+.dp-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;}
+.dp-pct{font-family:'DM Mono',monospace;font-size:9px;color:var(--green);}
+.dp-bar{height:5px;background:var(--border2);border-radius:3px;overflow:hidden;grid-column:1/-1;}
+.dp-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),#6effc8);}
+.deal-tags{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
+.deal-tag{font-family:'DM Mono',monospace;font-size:8px;padding:3px 9px;border-radius:7px;text-transform:uppercase;letter-spacing:.05em;}
+
+/* ─── PROFILE DESKTOP ─── */
+.profile-grid{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start;}
+@media(max-width:900px){.profile-grid{grid-template-columns:1fr;}}
+.profile-left{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;}
+.profile-hero-desk{background:linear-gradient(160deg,#0e1018,#141a20);padding:28px;position:relative;overflow:hidden;}
+.profile-hero-desk::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(201,168,76,.06) 0%,transparent 70%);}
+.co-logo-desk{width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:14px;border:2px solid rgba(201,168,76,.15);position:relative;z-index:1;}
+.co-name-desk{font-family:'Cormorant Garant',serif;font-size:24px;font-weight:700;color:var(--text);position:relative;z-index:1;}
+.co-sector-desk{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);margin-top:3px;letter-spacing:.05em;position:relative;z-index:1;}
+.co-verified{display:inline-flex;align-items:center;gap:5px;background:var(--gold-dim);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:4px 11px;font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);margin-top:12px;position:relative;z-index:1;}
+.co-vdot{width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);}
+.profile-stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--border);position:relative;z-index:1;}
+.pstat{padding:14px;text-align:center;}
+.pstat:not(:last-child){border-right:1px solid var(--border);}
+.pstat-val{font-family:'Cormorant Garant',serif;font-size:24px;font-weight:700;color:var(--text);}
+.pstat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--sub);margin-top:2px;letter-spacing:.06em;text-transform:uppercase;}
+.profile-body-desk{padding:18px;}
+.edit-btn{width:100%;padding:10px;border:1px solid var(--border);border-radius:12px;background:transparent;font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .15s;margin-bottom:14px;}
+.edit-btn:hover{border-color:rgba(201,168,76,.25);color:var(--gold);}
+.score-ring-card{background:var(--card2);border-radius:14px;padding:14px;display:flex;align-items:center;gap:14px;}
+.ring-svg-wrap{position:relative;flex-shrink:0;}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-val{font-family:'Cormorant Garant',serif;font-size:24px;font-weight:700;color:var(--gold);}
+.ring-sub-lbl{font-family:'DM Mono',monospace;font-size:7px;color:var(--sub);letter-spacing:.06em;text-transform:uppercase;}
+.ring-desc-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.ring-desc-body{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);line-height:1.5;}
+.profile-tenders-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;}
+
+/* ─── MODAL ─── */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(5,6,8,.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;animation:ovIn .2s ease both;}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:boxIn .3s cubic-bezier(.16,1,.3,1) both;}
+.modal-box::-webkit-scrollbar{display:none;}
+@keyframes boxIn{from{transform:scale(.95);opacity:0}to{transform:none;opacity:1}}
+.modal-inner{padding:28px;}
+.modal-title{font-family:'Cormorant Garant',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:20px;}
+.modal-title em{color:var(--gold);font-style:italic;}
+.field{margin-bottom:13px;}
+.field-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin-bottom:5px;display:block;}
+.field input,.field textarea,.field select{width:100%;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:10px 13px;font-size:13px;font-family:'Outfit',sans-serif;color:var(--text);outline:none;transition:border-color .2s;resize:none;}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(201,168,76,.4);}
+.field input::placeholder,.field textarea::placeholder{color:var(--sub);}
+.field select option{background:var(--card);}
+.type-chips{display:flex;gap:7px;flex-wrap:wrap;}
+.type-chip{padding:7px 14px;border-radius:9px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--border2);cursor:pointer;transition:all .15s;background:var(--card);color:var(--sub);}
+.type-chip.sel{background:var(--gold-dim);border-color:rgba(201,168,76,.3);color:var(--gold);}
+.save-btn{width:100%;padding:13px;border:none;border-radius:13px;cursor:pointer;background:linear-gradient(135deg,#b8942a,#d4aa40,#c9a84c);font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:#0b0c0f;letter-spacing:.03em;box-shadow:0 4px 20px rgba(201,168,76,.15);transition:all .15s;margin-top:4px;}
+.save-btn:active{transform:scale(.98);}
+.cancel-btn{width:100%;padding:10px;border:1px solid var(--border2);border-radius:13px;cursor:pointer;background:transparent;font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);letter-spacing:.06em;text-transform:uppercase;margin-top:8px;transition:all .15s;}
+.cancel-btn:hover{background:rgba(255,255,255,.03);}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;top:76px;right:24px;z-index:600;background:rgba(18,20,26,.97);border:1px solid var(--border2);border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.4);transform:translateX(20px);opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);pointer-events:none;min-width:240px;}
+.toast.show{transform:none;opacity:1;}
+.toast-ico{font-size:15px;}
+.toast-title{font-size:13px;font-weight:700;color:var(--text);}
+.toast-txt{font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);margin-top:1px;}
+
+/* ─── LIGHT MODE ─── */
+body.light{
+  --bg:#f0ede8;--surface:#f7f5f1;--card:#fff;--card2:#f4f1eb;
+  --border:#e4dfd6;--border2:#ddd8ce;
+  --text:#1a1510;--sub:#8a8070;--muted:#c0b8a8;
+  --gold:#9a7020;--gold2:#b8902a;--gold-dim:rgba(154,112,32,.08);
+  --green:#1a9060;--red:#c04040;--blue:#2260cc;--purple:#6040c8;--amber:#b07020;
+}
+body.light .iphone-shell{background:linear-gradient(155deg,#e0e0e4,#d0d0d4 35%,#c4c4c8 60%,#d0d0d4 80%,#e0e0e4);}
+
+@media(max-width:680px){
+  .sidebar{display:none;}
+  .view-body{padding:16px;}
+  .view-header{padding:20px 16px 12px;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .co-grid,.tender-grid{grid-template-columns:1fr;}
+  .hub-layout,.profile-grid{grid-template-columns:1fr;}
+  .hub-aside{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── TOPNAV ─── -->
+<nav class="topnav">
+  <div class="tn-brand">BIZ<span>NODE</span></div>
+  <div class="tn-search"><span style="font-size:13px;color:var(--sub)">🔍</span><input type="text" placeholder="Rechercher entreprises, appels d'offres…"/></div>
+  <div class="tn-right">
+    <div class="tn-switch" onclick="window.location.href='iphone-mycity.html'" title="Aller sur MyCity">
+      <span>🏙️</span><span>MyCity</span>
+    </div>
+    <div class="tn-btn" onclick="window.location.href='auth.html'">← Accueil</div>
+    <div class="tn-btn primary" onclick="openModal()">+ Publier une offre</div>
+    <div class="notif-btn" onclick="toast('🔔','Notifications','2 nouvelles réponses à vos appels d\'offres')">🔔<div class="notif-dot"></div></div>
+    <div class="tn-avatar" id="tn-avatar">🏭</div>
+  </div>
+</nav>
+
+<!-- ─── LAYOUT ─── -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-label">Tableau de bord</div>
+    <div class="sb-item active" id="sb-hub" onclick="switchView('hub')"><div class="sb-item-ico">📊</div>Hub Pro</div>
+    <div class="sb-item" id="sb-reseau" onclick="switchView('reseau')"><div class="sb-item-ico">🤝</div>Réseau</div>
+    <div class="sb-item" id="sb-tenders" onclick="switchView('tenders')"><div class="sb-item-ico">📋</div>Appels d'offres<div class="sb-item-badge">28</div></div>
+    <div class="sb-item" id="sb-deals" onclick="switchView('deals')"><div class="sb-item-ico">📄</div>Contrats</div>
+    <div class="sb-item" id="sb-profile" onclick="switchView('profile')"><div class="sb-item-ico">🏭</div>Profil société</div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Secteurs</div>
+    <div class="sb-item" onclick="toast('💻','IT / Digital','Filtrage par secteur')"><div class="sb-item-ico">💻</div>IT / Digital</div>
+    <div class="sb-item" onclick="toast('🏗️','BTP','Filtrage par secteur')"><div class="sb-item-ico">🏗️</div>BTP</div>
+    <div class="sb-item" onclick="toast('🏭','Industrie','Filtrage par secteur')"><div class="sb-item-ico">🏭</div>Industrie</div>
+    <div class="sb-item" onclick="toast('🌿','Environnement','Filtrage par secteur')"><div class="sb-item-ico">🌿</div>Environnement</div>
+    <div class="sb-divider"></div>
+    <div class="sb-gold-card">
+      <div class="sg-title">Performances · Ce mois</div>
+      <div class="sg-stat"><span class="sg-lbl">Vues profil</span><span class="sg-val" id="rp-views">1 847</span></div>
+      <div class="sg-stat"><span class="sg-lbl">Propositions</span><span class="sg-val">14</span></div>
+      <div class="sg-stat"><span class="sg-lbl">CA généré</span><span class="sg-val">€ 128K</span></div>
+    </div>
+    <div class="theme-row" onclick="toggleTheme()">
+      <div class="tt-track" id="tt-track"><div class="tt-knob"></div></div>
+      <span class="theme-lbl" id="theme-lbl">Mode clair</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ╔══ HUB ══╗ -->
+    <div class="view active" id="view-hub">
+      <div class="view-header">
+        <div class="vh-title">Hub <em>Pro</em></div>
+        <div class="vh-sub">TECHNOVISION SAS · LAVAL · TABLEAU DE BORD</div>
+      </div>
+      <div class="view-body">
+        <div class="kpi-grid" id="kpi-grid"></div>
+        <div class="hub-layout">
+          <div>
+            <div class="section-head"><span class="section-title">Activité récente</span><span class="section-link">Tout voir →</span></div>
+            <div class="activity-feed" id="activity-feed"></div>
+          </div>
+          <div class="hub-aside">
+            <div class="hub-aside-card">
+              <div class="hac-title">Score de fiabilité BizNode</div>
+              <div class="trust-bar-wrap">
+                <div class="trust-val">85</div>
+                <div class="trust-bar-track"><div class="trust-bar-fill" style="width:85%"></div></div>
+                <div class="trust-tags">
+                  <span class="trust-tag ab-green">Paiement ponctuel</span>
+                  <span class="trust-tag ab-blue">Délais respectés</span>
+                  <span class="trust-tag ab-gold">Membre vérifié</span>
+                </div>
+              </div>
+            </div>
+            <div class="hub-aside-card">
+              <div class="hac-title">Appels d'offres · Urgents</div>
+              <div id="aside-tenders"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ╔══ RÉSEAU ══╗ -->
+    <div class="view" id="view-reseau">
+      <div class="view-header">
+        <div class="vh-title">Ré<em>seau</em></div>
+        <div class="vh-sub">342 ENTREPRISES · LAVAL &amp; ALENTOURS</div>
+      </div>
+      <div class="view-body">
+        <div class="section-head"><span class="section-title">Recommandés par l'IA</span><span class="section-link">Filtrer par secteur</span></div>
+        <div class="co-grid" id="co-grid"></div>
+      </div>
+    </div>
+
+    <!-- ╔══ APPELS D'OFFRES ══╗ -->
+    <div class="view" id="view-tenders">
+      <div class="view-header">
+        <div class="vh-title">Appels <em>d'offres</em></div>
+        <div class="vh-sub">28 OFFRES ACTIVES · LAVAL</div>
+      </div>
+      <div class="view-body">
+        <div class="tender-grid" id="tender-grid"></div>
+      </div>
+    </div>
+
+    <!-- ╔══ CONTRATS ══╗ -->
+    <div class="view" id="view-deals">
+      <div class="view-header">
+        <div class="vh-title">Con<em>trats</em></div>
+        <div class="vh-sub">7 ACTIFS · 3 EN NÉGOCIATION</div>
+      </div>
+      <div class="view-body">
+        <div class="section-head"><span class="section-title">En cours</span><span class="section-link" onclick="openModal()">+ Nouveau contrat</span></div>
+        <div class="deals-list" id="deals-list"></div>
+      </div>
+    </div>
+
+    <!-- ╔══ PROFIL ══╗ -->
+    <div class="view" id="view-profile">
+      <div class="view-header">
+        <div class="vh-title">Profil <em>société</em></div>
+        <div class="vh-sub">TECHNOVISION SAS · LAVAL</div>
+      </div>
+      <div class="view-body">
+        <div class="profile-grid">
+          <div>
+            <div class="profile-left">
+              <div class="profile-hero-desk">
+                <div class="co-logo-desk">🏭</div>
+                <div class="co-name-desk">TECHNOVISION SAS</div>
+                <div class="co-sector-desk">INGÉNIERIE · CONSEIL IT · LAVAL</div>
+                <div class="co-verified"><div class="co-vdot"></div>Membre vérifié</div>
+                <div class="profile-stats-grid">
+                  <div class="pstat"><div class="pstat-val">47</div><div class="pstat-lbl">Contrats</div></div>
+                  <div class="pstat"><div class="pstat-val">23</div><div class="pstat-lbl">Partenaires</div></div>
+                  <div class="pstat"><div class="pstat-val">4.9</div><div class="pstat-lbl">Note</div></div>
+                </div>
+              </div>
+              <div class="profile-body-desk">
+                <button class="edit-btn" onclick="toast('✏️','Modifier','Fonctionnalité bientôt disponible')">✏️ Modifier le profil entreprise</button>
+                <div class="score-ring-card">
+                  <div class="ring-svg-wrap">
+                    <svg width="80" height="80" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="#252b35" stroke-width="7"/>
+                      <circle cx="40" cy="40" r="32" fill="none" stroke="url(#g1)" stroke-width="7" stroke-dasharray="201" stroke-dashoffset="30.2" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+                      <defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c9a84c"/><stop offset="100%" stop-color="#e8c96a"/></linearGradient></defs>
+                    </svg>
+                    <div class="ring-center"><div class="ring-val">85</div><div class="ring-sub-lbl">/100</div></div>
+                  </div>
+                  <div><div class="ring-desc-title">Score BizNode</div><div class="ring-desc-body">Fiabilité · Paiement<br>Délais · Recommandations</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="profile-tenders-card">
+              <div class="section-head"><span class="section-title">Mes appels d'offres</span><span class="section-link" onclick="openModal()">+ Publier</span></div>
+              <div id="my-tenders-grid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ─── MODAL ─── -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-inner">
+      <div class="modal-title">Publier un <em>appel d'offres</em></div>
+      <div class="field"><div class="field-lbl">Type</div>
+        <div class="type-chips">
+          <div class="type-chip sel" onclick="selChip(this)">Prestation</div>
+          <div class="type-chip" onclick="selChip(this)">Fourniture</div>
+          <div class="type-chip" onclick="selChip(this)">Partenariat</div>
+          <div class="type-chip" onclick="selChip(this)">Sous-traitance</div>
+        </div>
+      </div>
+      <div class="field"><div class="field-lbl">Titre du projet</div><input type="text" id="m-title" placeholder="ex: Développement application web SaaS"/></div>
+      <div class="field"><div class="field-lbl">Secteur</div>
+        <select id="m-sector"><option>Informatique / Digital</option><option>BTP / Travaux</option><option>Industrie</option><option>Conseil / Services</option><option>Logistique</option><option>Marketing / Com</option></select>
+      </div>
+      <div class="field"><div class="field-lbl">Budget estimé (€)</div><input type="text" id="m-budget" placeholder="ex: 15 000 – 30 000 €"/></div>
+      <div class="field"><div class="field-lbl">Description</div><textarea id="m-desc" rows="3" placeholder="Périmètre, livrables, compétences requises…"></textarea></div>
+      <div class="field"><div class="field-lbl">Délai de réponse</div><input type="text" id="m-deadline" placeholder="ex: 15 jours"/></div>
+      <button class="save-btn" onclick="publishTender()">Publier l'appel d'offres</button>
+      <button class="cancel-btn" onclick="closeModal()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"><div class="toast-ico" id="t-ico">✅</div><div class="toast-body"><div class="toast-title" id="t-title"></div><div class="toast-txt" id="t-txt"></div></div></div>
+
+<script>
+/* ═══ STATE ═══ */
+const STATE = {
+  tenders:[
+    {id:1,type:'Prestation',cat:'Informatique',title:'Refonte plateforme e-commerce B2B',company:'LACTEL GROUP',logo:'🥛',budget:'40 000 – 60 000 €',deadline:'12 jours',replies:6,mine:false},
+    {id:2,type:'Partenariat',cat:'Logistique',title:'Distribution régionale Pays de Loire',company:'INTERMARCHÉ PRO',logo:'🏪',budget:'Long terme',deadline:'8 jours',replies:3,mine:false},
+    {id:3,type:'Prestation',cat:'Conseil',title:'Audit cybersécurité infrastructure SI',company:'TECHNOVISION SAS',logo:'🏭',budget:'15 000 – 25 000 €',deadline:'5 jours',replies:9,mine:true},
+    {id:4,type:'Fourniture',cat:'BTP',title:'Fourniture matériaux isolants — Chantier R+6',company:'BOUYGUES BÂTIMENT',logo:'🏗️',budget:'80 000 €',deadline:'21 jours',replies:2,mine:false},
+  ],
+  companies:[
+    {id:1,name:'LACTEL GROUP',sector:'Agroalimentaire',logo:'🥛',bg:'#1a1610',desc:'Leader laitier régional, 2 400 employés. Partenaire idéal pour la supply chain locale.',employees:'2 400',rating:'4.8',contracts:124,tag:'Partenaire potentiel',tagCls:'ab-blue'},
+    {id:2,name:'BOUYGUES BÂTIMENT',sector:'BTP / Construction',logo:'🏗️',bg:'#111a10',desc:'Filiale régionale BTP, grands chantiers de réhabilitation et construction neuve.',employees:'650',rating:'4.7',contracts:87,tag:'Prospect chaud',tagCls:'ab-gold'},
+    {id:3,name:'LAVAL NUMÉRIQUE',sector:'Innovation / Tech',logo:'💡',bg:'#101420',desc:'Agence de développement économique numérique. Accélérateur de partenariats tech.',employees:'45',rating:'5.0',contracts:31,tag:'Recommandé IA',tagCls:'ab-green'},
+    {id:4,name:'SEPUR ENVIRONNEMENT',sector:'Environnement',logo:'♻️',bg:'#0f1a12',desc:'Gestion des déchets industriels et solutions RSE. Certifié ISO 14001.',employees:'320',rating:'4.6',contracts:56,tag:'Nouveau',tagCls:'ab-purple'},
+  ],
+  deals:[
+    {id:1,title:'Développement ERP interne',company:'LACTEL GROUP',amount:'84 000',period:'12 mois',progress:67,status:'En cours',statusCls:'ab-blue',tags:['IT','Signé']},
+    {id:2,title:'Maintenance réseau & infra',company:'BOUYGUES BÂTIMENT',amount:'2 400',period:'/mois',progress:100,status:'Actif',statusCls:'ab-green',tags:['Infra','Récurrent']},
+    {id:3,title:'Consulting transformation digitale',company:'LAVAL NUMÉRIQUE',amount:'18 500',period:'6 mois',progress:30,status:'En cours',statusCls:'ab-blue',tags:['Conseil','Phase 1']},
+    {id:4,title:'Audit RGPD complet',company:'SEPUR ENVIRONNEMENT',amount:'6 200',period:'3 mois',progress:85,status:'Finalisation',statusCls:'ab-gold',tags:['Juridique','RGPD']},
+  ],
+  activity:[
+    {icon:'deal',emoji:'✅',title:'Contrat ERP signé — LACTEL GROUP',meta:'Il y a 2h · 84 000 €',badge:'Signé',badgeCls:'ab-green'},
+    {icon:'tender',emoji:'📋',title:'9 réponses à votre AO Cybersécurité',meta:'Il y a 4h · Délai : 5 jours',badge:'Urgent',badgeCls:'ab-gold'},
+    {icon:'partner',emoji:'🤝',title:'LAVAL NUMÉRIQUE souhaite se connecter',meta:'Hier · Secteur Tech',badge:'Réseau',badgeCls:'ab-blue'},
+    {icon:'deal',emoji:'💸',title:'Paiement reçu · BOUYGUES BÂTIMENT',meta:'Hier · 2 400 €',badge:'Payé',badgeCls:'ab-green'},
+    {icon:'alert',emoji:'⚠️',title:'AO expirant dans 5 jours · Audit SI',meta:'Action requise',badge:'Attention',badgeCls:'ab-red'},
+    {icon:'partner',emoji:'⭐',title:'Nouvel avis 5★ de LACTEL GROUP',meta:'Il y a 2 jours',badge:'Réputation',badgeCls:'ab-purple'},
+  ],
+};
+let toastTimer=null,isLight=false;
+
+/* ═══ UTILS ═══ */
+function toast(ico,title,txt){
+  const t=document.getElementById('toast');
+  document.getElementById('t-ico').textContent=ico;
+  document.getElementById('t-title').textContent=title;
+  document.getElementById('t-txt').textContent=txt;
+  t.classList.add('show');clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  const sb=document.getElementById('sb-'+v);if(sb)sb.classList.add('active');
+}
+function selChip(el){el.closest('.type-chips').querySelectorAll('.type-chip').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+function openModal(){document.getElementById('modal-overlay').classList.add('open');}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function publishTender(){
+  const title=document.getElementById('m-title').value.trim();
+  if(!title){toast('⚠️','Champ manquant','Le titre est obligatoire.');return;}
+  const budget=document.getElementById('m-budget').value||'À définir';
+  const deadline=document.getElementById('m-deadline').value||'15 jours';
+  STATE.tenders.unshift({id:Date.now(),type:'Prestation',cat:'Informatique',title,company:'TECHNOVISION SAS',logo:'🏭',budget,deadline,replies:0,mine:true});
+  renderTenders();renderMyTenders();closeModal();
+  document.getElementById('m-title').value='';document.getElementById('m-budget').value='';document.getElementById('m-deadline').value='';
+  toast('✅','Appel d\'offres publié','Visible par les 342 entreprises du réseau');
+}
+
+/* ═══ RENDER ═══ */
+function renderKPI(){
+  document.getElementById('kpi-grid').innerHTML=`
+    <div class="kpi-card" onclick="switchView('deals')"><div class="kpi-label">CA en cours</div><div class="kpi-val">111K€</div><div class="kpi-delta up">↑ +18% ce mois</div></div>
+    <div class="kpi-card" onclick="switchView('reseau')"><div class="kpi-label">Partenaires actifs</div><div class="kpi-val">23</div><div class="kpi-delta up">↑ +2 nouveaux</div></div>
+    <div class="kpi-card"><div class="kpi-label">Taux de réponse</div><div class="kpi-val">94%</div><div class="kpi-delta up">↑ Top 5%</div></div>
+    <div class="kpi-card" onclick="switchView('tenders')"><div class="kpi-label">AO actifs</div><div class="kpi-val">${STATE.tenders.filter(t=>t.mine).length}</div><div class="kpi-delta up">↑ En ligne</div></div>`;
+}
+function renderActivity(){
+  document.getElementById('activity-feed').innerHTML=STATE.activity.map(a=>`
+    <div class="act-item" onclick="toast('${a.emoji}','${a.title}','${a.meta}')">
+      <div class="act-icon ${a.icon}">${a.emoji}</div>
+      <div class="act-body"><div class="act-title">${a.title}</div><div class="act-meta">${a.meta}</div></div>
+      <div class="act-badge ${a.badgeCls}">${a.badge}</div>
+    </div>`).join('');
+}
+function renderAsideTenders(){
+  const el=document.getElementById('aside-tenders');if(!el)return;
+  el.innerHTML=STATE.tenders.filter(t=>t.mine).slice(0,3).map(t=>`
+    <div style="padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="switchView('tenders')">
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px;">${t.title}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);">${t.replies} réponses · Délai: <span style="color:var(--amber)">${t.deadline}</span></div>
+    </div>`).join('');
+}
+function renderCompanies(){
+  document.getElementById('co-grid').innerHTML=STATE.companies.map(c=>`
+    <div class="co-card" onclick="toast('🤝','${c.name}','${c.sector}')">
+      <div class="co-header">
+        <div class="co-logo" style="background:${c.bg}">${c.logo}</div>
+        <div><div class="co-name">${c.name}</div><div class="co-sector">${c.sector}</div></div>
+        <span class="co-tag ${c.tagCls}">${c.tag}</span>
+      </div>
+      <div class="co-desc">${c.desc}</div>
+      <div class="co-footer">
+        <span class="co-stat"><span>${c.employees}</span> employés</span>
+        <span class="co-stat">⭐ <span>${c.rating}</span></span>
+        <span class="co-stat"><span>${c.contracts}</span> contrats</span>
+        <button class="co-btn" onclick="event.stopPropagation();toast('📨','Invitation','Message envoyé à ${c.name}')">Contacter</button>
+      </div>
+    </div>`).join('');
+}
+function renderTenders(){
+  document.getElementById('tender-grid').innerHTML=STATE.tenders.map(t=>`
+    <div class="tender-card" onclick="toast('📋','${t.title}','${t.company} · ${t.budget}')">
+      <div class="tender-bar"></div>
+      <div class="tender-inner">
+        <div class="tender-cat">${t.type} · ${t.cat}</div>
+        <div class="tender-title">${t.title}</div>
+        <div class="tender-co">${t.logo} ${t.company}${t.mine?` <span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:8px;">· Ma société</span>`:''}</div>
+        <div class="tender-details">
+          <div class="tender-detail"><div class="td-lbl">Budget</div><div class="td-val">${t.budget}</div></div>
+          <div class="tender-detail"><div class="td-lbl">Réponses</div><div class="td-val">${t.replies}</div></div>
+        </div>
+        <div class="tender-footer">
+          <span class="tender-deadline">Délai : <span>${t.deadline}</span></span>
+          <button class="tender-btn" onclick="event.stopPropagation();toast('📨','Proposition envoyée','Votre candidature a été transmise')">Répondre →</button>
+        </div>
+      </div>
+    </div>`).join('');
+  renderKPI();
+}
+function renderDeals(){
+  document.getElementById('deals-list').innerHTML=STATE.deals.map(d=>`
+    <div class="deal-card" onclick="toast('📄','${d.title}','${d.company} · ${d.amount}€')">
+      <div>
+        <div class="deal-title">${d.title}</div>
+        <div class="deal-co">${d.company}</div>
+        <div class="deal-progress">
+          <div class="dp-header"><span class="dp-lbl">Avancement</span><span class="dp-pct">${d.progress}%</span></div>
+          <div class="dp-bar"><div class="dp-fill" style="width:${d.progress}%"></div></div>
+        </div>
+        <div class="deal-tags"><span class="deal-tag ${d.statusCls}">${d.status}</span>${d.tags.map(tg=>`<span class="deal-tag ab-purple">${tg}</span>`).join('')}</div>
+      </div>
+      <div class="deal-right">
+        <div class="deal-amount">${d.amount}€</div>
+        <div class="deal-period">${d.period}</div>
+      </div>
+    </div>`).join('');
+}
+function renderMyTenders(){
+  const mine=STATE.tenders.filter(t=>t.mine);
+  document.getElementById('my-tenders-grid').innerHTML=mine.length===0
+    ?`<div style="text-align:center;padding:24px;font-family:'DM Mono',monospace;font-size:10px;color:var(--sub);">Aucun appel d'offres publié.<br><span style="color:var(--gold);cursor:pointer;" onclick="openModal()">Publier mon premier appel →</span></div>`
+    :mine.map(t=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="switchView('tenders')">
+        <div style="font-size:20px;">${t.logo}</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--text);">${t.title}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);margin-top:2px;">${t.type} · ${t.replies} réponses · Délai: ${t.deadline}</div></div>
+        <span style="font-family:'DM Mono',monospace;font-size:8px;padding:3px 9px;border-radius:6px;background:var(--gold-dim);color:var(--gold);text-transform:uppercase;letter-spacing:.06em;">Actif</span>
+      </div>`).join('');
+}
+
+/* ═══ THEME ═══ */
+function toggleTheme(){
+  isLight=!isLight;
+  document.body.classList.toggle('light',isLight);
+  document.getElementById('tt-track').classList.toggle('on',isLight);
+  document.getElementById('theme-lbl').textContent=isLight?'Mode sombre':'Mode clair';
+  toast(isLight?'☀️':'🌙',isLight?'Mode clair activé':'Mode sombre activé','');
+}
+
+/* ═══ INIT ═══ */
+function init(){
+  renderKPI();renderActivity();renderAsideTenders();renderCompanies();renderTenders();renderDeals();renderMyTenders();
+  const s=JSON.parse(localStorage.getItem('bncity_session')||'null');
+  if(s&&s.app==='biznode'){document.getElementById('tn-avatar').textContent=s.logo||'🏭';}
+  setTimeout(()=>toast('🏭','Bienvenue TECHNOVISION','9 nouvelles opportunités B2B aujourd\'hui'),800);
+}
+init();
+</script>
+</body>
+</html>
